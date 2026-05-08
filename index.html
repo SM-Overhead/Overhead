@@ -2,184 +2,548 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Overhead ✈️</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Overhead</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #080c14;
+      --surface: #0d1220;
+      --surface2: #111827;
+      --border: #1a2340;
+      --accent: #3b82f6;
+      --accent2: #06b6d4;
+      --green: #10b981;
+      --amber: #f59e0b;
+      --text: #f0f4ff;
+      --muted: #4b5f7c;
+      --subtle: #1e2d47;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: #0a0e1a; color: #fff;
-      min-height: 100vh; display: flex;
-      flex-direction: column; align-items: center;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 0;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -30%;
+      left: -20%;
+      width: 70%;
+      height: 70%;
+      background: radial-gradient(ellipse, rgba(59,130,246,0.07) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      max-width: 430px;
+      margin: 0 auto;
       padding: 0 16px 40px;
     }
-    header { width: 100%; max-width: 480px; padding: 48px 0 24px; display: flex; align-items: center; gap: 10px; }
-    header h1 { font-size: 28px; font-weight: 700; }
-    header span { font-size: 28px; }
-    #status-bar { width: 100%; max-width: 480px; font-size: 13px; color: #6b7a99; margin-bottom: 20px; min-height: 18px; display: flex; align-items: center; gap: 8px; }
-    .dot { width: 8px; height: 8px; border-radius: 50%; background: #6b7a99; flex-shrink: 0; }
-    .dot.live { background: #00e676; box-shadow: 0 0 6px #00e676; animation: pulse 2s infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    #btn-locate { background: #2563eb; color: #fff; border: none; border-radius: 14px; padding: 16px 32px; font-size: 17px; font-weight: 600; cursor: pointer; margin-bottom: 32px; width: 100%; max-width: 480px; transition: background 0.2s; }
-    #btn-locate:hover { background: #1d4ed8; }
-    #btn-locate:disabled { background: #1e293b; color: #475569; cursor: default; }
-    #flights-container { width: 100%; max-width: 480px; display: flex; flex-direction: column; gap: 14px; }
-    .flight-card { background: #111827; border: 1px solid #1e293b; border-radius: 18px; padding: 20px; position: relative; overflow: hidden; animation: fadeUp 0.3s ease forwards; }
-    .flight-card.top { border-color: #2563eb; background: linear-gradient(135deg, #0f172a 60%, #0d1f3c); }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
-    .card-label { font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #2563eb; text-transform: uppercase; margin-bottom: 10px; }
-    .flight-route { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-    .flight-sub { font-size: 13px; color: #6b7a99; margin-bottom: 16px; }
-    .flight-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .stat { background: #0a0e1a; border-radius: 10px; padding: 10px 12px; }
-    .stat-label { font-size: 10px; color: #475569; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
-    .stat-value { font-size: 16px; font-weight: 600; }
-    .stat-unit { font-size: 10px; color: #6b7a99; margin-left: 2px; }
-    .plane-icon { position: absolute; top: 20px; right: 20px; font-size: 32px; opacity: 0.15; }
-    .no-flights { text-align: center; color: #475569; font-size: 15px; margin-top: 40px; line-height: 1.6; }
-    .no-flights span { font-size: 48px; display: block; margin-bottom: 12px; }
-    #refresh-note { font-size: 12px; color: #334155; margin-top: 24px; text-align: center; }
-    .loading-spinner { width: 36px; height: 36px; border: 3px solid #1e293b; border-top-color: #2563eb; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 40px auto; }
+
+    .header {
+      padding: 52px 0 8px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+
+    .logo h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: 26px; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #f0f4ff, #94b4ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .live-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 6px 12px;
+      font-size: 11px; font-family: 'DM Mono', monospace;
+      color: var(--muted); transition: all 0.3s;
+    }
+
+    .live-pill.active { border-color: rgba(16,185,129,0.3); color: var(--green); }
+
+    .live-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--muted); transition: all 0.3s;
+    }
+
+    .live-pill.active .live-dot {
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .location-info {
+      margin: 20px 0 24px;
+      font-size: 12px; font-family: 'DM Mono', monospace;
+      color: var(--muted); min-height: 16px;
+    }
+
+    .scan-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color: #fff; border: none; border-radius: 16px;
+      padding: 18px; font-size: 16px; font-weight: 500;
+      font-family: 'DM Sans', sans-serif;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; margin-bottom: 28px; letter-spacing: 0.2px;
+    }
+
+    .scan-btn:active { transform: scale(0.98); opacity: 0.9; }
+    .scan-btn:disabled { background: var(--surface2); color: var(--muted); cursor: default; }
+
+    .section-label {
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      letter-spacing: 1.5px; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 12px;
+    }
+
+    .flights-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .flight-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px; overflow: hidden;
+      animation: slideUp 0.35s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    .flight-card.primary {
+      border-color: rgba(59,130,246,0.35);
+      background: linear-gradient(160deg, #0d1525 0%, #0a1220 100%);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-strip {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px 0;
+    }
+
+    .airline-badge { display: flex; align-items: center; gap: 8px; }
+
+    .airline-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent); flex-shrink: 0;
+    }
+
+    .flight-card.primary .airline-dot {
+      background: var(--green); box-shadow: 0 0 8px var(--green);
+    }
+
+    .airline-name { font-size: 11px; font-weight: 500; color: var(--muted); letter-spacing: 0.3px; }
+    .flight-card.primary .airline-name { color: var(--green); }
+
+    .callsign-tag {
+      font-family: 'DM Mono', monospace; font-size: 11px;
+      color: var(--muted); background: var(--subtle);
+      border-radius: 6px; padding: 3px 8px;
+    }
+
+    .card-route { padding: 10px 16px 14px; }
+
+    .route-airports { display: flex; align-items: center; margin-bottom: 3px; }
+
+    .airport-code {
+      font-family: 'Syne', sans-serif;
+      font-size: 30px; font-weight: 800;
+      letter-spacing: -1px; line-height: 1; color: var(--text);
+    }
+
+    .flight-card.primary .airport-code { font-size: 34px; }
+
+    .route-arrow {
+      flex: 1; display: flex; align-items: center;
+      padding: 0 8px; position: relative;
+    }
+
+    .route-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), var(--accent), var(--border));
+      position: relative;
+    }
+
+    .route-plane {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      font-size: 14px; top: -9px;
+    }
+
+    .airport-city {
+      font-size: 11px; color: var(--muted); margin-top: 2px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 120px;
+    }
+
+    .route-unknown {
+      font-family: 'DM Mono', monospace; font-size: 13px;
+      color: var(--muted); padding: 6px 0 4px; font-style: italic;
+    }
+
+    .card-stats {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--border);
+    }
+
+    .stat-cell { padding: 10px 12px; border-right: 1px solid var(--border); }
+    .stat-cell:last-child { border-right: none; }
+
+    .stat-l {
+      font-size: 9px; font-family: 'DM Mono', monospace;
+      color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.5px; margin-bottom: 3px;
+    }
+
+    .stat-v {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px; font-weight: 500; color: var(--text); white-space: nowrap;
+    }
+
+    .stat-v .unit { font-size: 9px; color: var(--muted); }
+
+    .dist-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 8px; padding: 4px 8px;
+      font-size: 10px; font-family: 'DM Mono', monospace;
+      color: var(--accent2); margin: 0 16px 12px;
+    }
+
+    .aircraft-strip {
+      padding: 0 16px 12px; font-size: 11px;
+      color: var(--muted); font-family: 'DM Mono', monospace;
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    .state-box { text-align: center; padding: 48px 24px; color: var(--muted); }
+    .state-icon { font-size: 48px; margin-bottom: 16px; display: block; }
+    .state-title { font-family: 'Syne', sans-serif; font-size: 18px; color: var(--text); margin-bottom: 8px; }
+    .state-sub { font-size: 13px; line-height: 1.6; }
+
+    .spinner {
+      width: 32px; height: 32px;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.7s linear infinite;
+      margin: 48px auto 16px;
+    }
+
     @keyframes spin { to { transform: rotate(360deg); } }
-    #error-box { background: #1c0a0a; border: 1px solid #7f1d1d; border-radius: 12px; padding: 16px; color: #fca5a5; font-size: 13px; line-height: 1.6; width: 100%; max-width: 480px; margin-top: 8px; display: none; }
+
+    .spinner-label {
+      text-align: center; font-size: 12px;
+      font-family: 'DM Mono', monospace; color: var(--muted); margin-bottom: 8px;
+    }
+
+    .refresh-bar {
+      margin-top: 20px; display: flex; align-items: center;
+      justify-content: center; gap: 8px;
+      font-size: 11px; font-family: 'DM Mono', monospace; color: var(--muted);
+    }
+
+    .refresh-progress { width: 60px; height: 2px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .refresh-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 1s linear; }
+
+    .error-card {
+      background: rgba(239,68,68,0.05);
+      border: 1px solid rgba(239,68,68,0.2);
+      border-radius: 14px; padding: 14px 16px;
+      font-size: 12px; color: #fca5a5; line-height: 1.6;
+      font-family: 'DM Mono', monospace; display: none; margin-bottom: 16px;
+    }
   </style>
 </head>
 <body>
-  <header><span>✈️</span><h1>Overhead</h1></header>
-  <div id="status-bar"><div class="dot" id="dot"></div><span id="status-text">Tap below to find flights near you</span></div>
-  <button id="btn-locate" onclick="startTracking()">📍 Find Flights Above Me</button>
-  <div id="error-box"></div>
-  <div id="flights-container"></div>
-  <div id="refresh-note"></div>
+<div class="app">
 
-  <script>
-    let userLat = null, userLon = null;
-    let countdownTimer = null, countdown = 15;
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">✈️</div>
+      <h1>Overhead</h1>
+    </div>
+    <div class="live-pill" id="livePill">
+      <div class="live-dot"></div>
+      <span id="liveLabel">offline</span>
+    </div>
+  </div>
 
-    function setStatus(text, live = false) {
-      document.getElementById('status-text').textContent = text;
-      document.getElementById('dot').className = 'dot' + (live ? ' live' : '');
-    }
+  <div class="location-info" id="locationInfo">Waiting for location...</div>
+  <button class="scan-btn" id="scanBtn" onclick="startTracking()"><span>📍</span> Scan the sky above me</button>
+  <div class="error-card" id="errorCard"></div>
+  <div id="mainContent"></div>
+  <div class="refresh-bar" id="refreshBar" style="display:none">
+    <span id="refreshLabel">refreshing in 15s</span>
+    <div class="refresh-progress"><div class="refresh-fill" id="refreshFill" style="width:100%"></div></div>
+  </div>
 
-    function showError(msg) {
-      const box = document.getElementById('error-box');
-      box.textContent = msg;
-      box.style.display = 'block';
-    }
+</div>
+<script>
+  const AIRLINES = {
+    EZY:'easyJet', BAW:'British Airways', RYR:'Ryanair', TOM:'TUI Airways',
+    TCX:'TUI Airways', VIR:'Virgin Atlantic', EXS:'Jet2', DLH:'Lufthansa',
+    AFR:'Air France', KLM:'KLM', IBE:'Iberia', AZA:'ITA Airways',
+    UAE:'Emirates', QTR:'Qatar Airways', ETD:'Etihad', SIA:'Singapore Airlines',
+    AAL:'American Airlines', UAL:'United Airlines', DAL:'Delta Air Lines',
+    SWA:'Southwest', FFT:'Frontier', NKS:'Spirit', ACA:'Air Canada',
+    WJA:'WestJet', QFA:'Qantas', ANZ:'Air New Zealand', CPA:'Cathay Pacific',
+    ANA:'ANA', JAL:'Japan Airlines', CSN:'China Southern', CCA:'Air China',
+    THY:'Turkish Airlines', SVR:'Aeroflot', AEE:'Aegean Airlines',
+    BEL:'Brussels Airlines', SAS:'Scandinavian Airlines', FIN:'Finnair',
+    TAP:'TAP Air Portugal', LOT:'LOT Polish', WZZ:'Wizz Air',
+    VLG:'Vueling', IBX:'Iberia Express', EIN:'Aer Lingus',
+    LOG:'Loganair', TRA:'Transavia', SXS:'SunExpress',
+    FDB:'flydubai', GFA:'Gulf Air', SVA:'Saudia', MSR:'EgyptAir',
+    RAM:'Royal Air Maroc', ETH:'Ethiopian', KQA:'Kenya Airways',
+  };
 
-    function hideError() {
-      document.getElementById('error-box').style.display = 'none';
-    }
+  const CITIES = {
+    LHR:'London',LGW:'London',STN:'London',LTN:'London',LCY:'London',SEN:'London',
+    MAN:'Manchester',BHX:'Birmingham',EDI:'Edinburgh',GLA:'Glasgow',
+    BRS:'Bristol',NCL:'Newcastle',LBA:'Leeds',EMA:'Nottingham',
+    ABZ:'Aberdeen',INV:'Inverness',BFS:'Belfast',DUB:'Dublin',
+    CDG:'Paris',ORY:'Paris',AMS:'Amsterdam',FRA:'Frankfurt',
+    MUC:'Munich',BCN:'Barcelona',MAD:'Madrid',FCO:'Rome',
+    MXP:'Milan',ZRH:'Zurich',VIE:'Vienna',CPH:'Copenhagen',
+    ARN:'Stockholm',OSL:'Oslo',HEL:'Helsinki',LIS:'Lisbon',
+    ATH:'Athens',IST:'Istanbul',DXB:'Dubai',AUH:'Abu Dhabi',
+    DOH:'Doha',JFK:'New York',LAX:'Los Angeles',ORD:'Chicago',
+    ATL:'Atlanta',DFW:'Dallas',MIA:'Miami',BOS:'Boston',
+    SFO:'San Francisco',YYZ:'Toronto',SYD:'Sydney',SIN:'Singapore',
+    HKG:'Hong Kong',NRT:'Tokyo',HND:'Tokyo',ICN:'Seoul',
+    PEK:'Beijing',PVG:'Shanghai',BKK:'Bangkok',DEL:'Delhi',BOM:'Mumbai',
+  };
 
-    function startTracking() {
-      const btn = document.getElementById('btn-locate');
-      btn.disabled = true;
-      btn.textContent = '📡 Getting your location...';
-      setStatus('Requesting location access...');
-      if (!navigator.geolocation) {
-        setStatus('❌ Geolocation not supported');
-        btn.disabled = false; return;
+  let userLat = null, userLon = null;
+  let countdown = 15, countdownTimer = null;
+  const REFRESH = 15;
+
+  function setLive(on, label) {
+    const pill = document.getElementById('livePill');
+    pill.className = 'live-pill' + (on ? ' active' : '');
+    document.getElementById('liveLabel').textContent = label || (on ? 'live' : 'offline');
+  }
+
+  function showError(msg) {
+    const el = document.getElementById('errorCard');
+    el.textContent = msg; el.style.display = msg ? 'block' : 'none';
+  }
+
+  function startTracking() {
+    const btn = document.getElementById('scanBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span>📡</span> Getting location…';
+    setLive(false, 'locating');
+    showError('');
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        userLat = pos.coords.latitude;
+        userLon = pos.coords.longitude;
+        document.getElementById('locationInfo').textContent =
+          `${userLat.toFixed(4)}°N  ${Math.abs(userLon).toFixed(4)}°${userLon<0?'W':'E'}`;
+        btn.innerHTML = '<span>🔄</span> Refresh now';
+        btn.disabled = false;
+        btn.onclick = fetchFlights;
+        fetchFlights();
+      },
+      () => {
+        showError('Location access denied. Please allow location in your browser settings.');
+        btn.disabled = false;
+        btn.innerHTML = '<span>📍</span> Scan the sky above me';
+        setLive(false, 'offline');
       }
-      navigator.geolocation.getCurrentPosition(
-        (pos) => {
-          userLat = pos.coords.latitude;
-          userLon = pos.coords.longitude;
-          btn.textContent = '🔄 Refresh Now';
-          btn.disabled = false;
-          btn.onclick = fetchFlights;
-          fetchFlights();
-        },
-        () => {
-          setStatus('❌ Location denied. Please allow location and try again.');
-          btn.disabled = false;
-          btn.textContent = '📍 Find Flights Above Me';
-        }
-      );
-    }
+    );
+  }
 
-    function startCountdown() {
-      clearInterval(countdownTimer);
-      countdown = 15;
-      countdownTimer = setInterval(() => {
-        countdown--;
-        document.getElementById('refresh-note').textContent = `Auto-refreshing in ${countdown}s`;
-        if (countdown <= 0) { clearInterval(countdownTimer); fetchFlights(); }
-      }, 1000);
-    }
+  function startCountdown() {
+    clearInterval(countdownTimer);
+    countdown = REFRESH;
+    const fill = document.getElementById('refreshFill');
+    const label = document.getElementById('refreshLabel');
+    document.getElementById('refreshBar').style.display = 'flex';
+    countdownTimer = setInterval(() => {
+      countdown--;
+      fill.style.width = (countdown / REFRESH * 100) + '%';
+      label.textContent = `refreshing in ${countdown}s`;
+      if (countdown <= 0) { clearInterval(countdownTimer); fetchFlights(); }
+    }, 1000);
+  }
 
-    async function fetchFlights() {
-      if (!userLat) return;
-      hideError();
-      setStatus('Scanning the skies...', false);
-      document.getElementById('flights-container').innerHTML = '<div class="loading-spinner"></div>';
-      document.getElementById('refresh-note').textContent = '';
+  async function lookupRoute(callsign) {
+    if (!callsign || callsign === 'Unknown') return null;
+    try {
+      const res = await fetch(`https://api.adsbdb.com/v0/callsign/${callsign.trim()}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      const r = data?.response?.flightroute;
+      if (!r) return null;
+      return {
+        from: r.origin?.iata_code || r.origin?.icao_code || null,
+        to:   r.destination?.iata_code || r.destination?.icao_code || null,
+        fromCity: r.origin?.municipality || null,
+        toCity:   r.destination?.municipality || null,
+        airline:  r.airline?.name || null,
+      };
+    } catch { return null; }
+  }
 
-      const url = `https://api.airplanes.live/v2/point/${userLat}/${userLon}/50`;
+  async function lookupAircraft(hex) {
+    if (!hex) return null;
+    try {
+      const res = await fetch(`https://api.adsbdb.com/v0/aircraft/${hex}`);
+      if (!res.ok) return null;
+      const data = await res.json();
+      const a = data?.response?.aircraft;
+      if (!a) return null;
+      return { type: a.type || null, icaoType: a.icao_type || null, reg: a.registration || null };
+    } catch { return null; }
+  }
 
-      try {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const data = await res.json();
-        renderFlights(data.ac || []);
-        setStatus(`Updated · ${new Date().toLocaleTimeString()}`, true);
-      } catch (e) {
-        setStatus('⚠️ Could not fetch flight data', false);
-        showError(`Error: ${e.message}. This may be a CORS issue — the API may not allow direct browser calls. We may need a proxy.`);
-        document.getElementById('flights-container').innerHTML = '';
-      }
-      startCountdown();
-    }
+  function guessAirline(callsign) {
+    if (!callsign || callsign.length < 3) return null;
+    const prefix = callsign.replace(/[0-9]/g, '').trim().toUpperCase();
+    return AIRLINES[prefix] || null;
+  }
 
-    function arrow(deg) {
-      if (deg == null) return '✈️';
-      return ['↑','↗','→','↘','↓','↙','←','↖'][Math.round(deg / 45) % 8];
-    }
+  function cityFor(iata) { return iata ? (CITIES[iata] || iata) : null; }
 
-    function distKm(la1, lo1, la2, lo2) {
-      const R = 6371, dL = (la2-la1)*Math.PI/180, dO = (lo2-lo1)*Math.PI/180;
-      const a = Math.sin(dL/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dO/2)**2;
-      return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    }
+  function distKm(la1, lo1, la2, lo2) {
+    const R = 6371, dL=(la2-la1)*Math.PI/180, dO=(lo2-lo1)*Math.PI/180;
+    const a = Math.sin(dL/2)**2 + Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dO/2)**2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
 
-    function renderFlights(aircraft) {
-      const c = document.getElementById('flights-container');
-      c.innerHTML = '';
-      if (!aircraft.length) {
-        c.innerHTML = '<div class="no-flights"><span>🌤️</span>No aircraft detected overhead right now.<br>The skies above you are quiet!</div>';
-        return;
-      }
+  async function fetchFlights() {
+    if (!userLat) return;
+    showError('');
+    setLive(false, 'scanning');
+    document.getElementById('refreshBar').style.display = 'none';
+    const content = document.getElementById('mainContent');
+    content.innerHTML = `<div class="spinner"></div><div class="spinner-label">scanning airspace…</div>`;
 
-      aircraft
+    try {
+      const res = await fetch(`https://api.airplanes.live/v2/point/${userLat}/${userLon}/50`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      const aircraft = (data.ac || [])
         .filter(a => a.lat && a.lon)
         .map(a => ({ ...a, dist: distKm(userLat, userLon, a.lat, a.lon) }))
-        .sort((a, b) => a.dist - b.dist)
-        .slice(0, 5)
-        .forEach((a, i) => {
-          const card = document.createElement('div');
-          card.className = 'flight-card' + (i === 0 ? ' top' : '');
-          card.style.animationDelay = `${i * 0.05}s`;
+        .sort((a,b) => a.dist - b.dist)
+        .slice(0, 5);
 
-          const callsign = (a.flight || a.hex || 'Unknown').trim();
-          const from = a.dep_iata || a.dep_icao || '?';
-          const to = a.arr_iata || a.arr_icao || '?';
-          const route = (from !== '?' && to !== '?') ? `${from} → ${to}` : 'Route unknown';
-          const alt = a.alt_baro ? Math.round(a.alt_baro).toLocaleString() + ' ft' : '—';
-          const spd = a.gs ? Math.round(a.gs) + ' kts' : '—';
-          const hdg = a.track != null ? Math.round(a.track) + '°' : '—';
+      if (!aircraft.length) {
+        content.innerHTML = `
+          <div class="state-box">
+            <span class="state-icon">🌤️</span>
+            <div class="state-title">Clear skies</div>
+            <div class="state-sub">No aircraft detected within 50km right now</div>
+          </div>`;
+        setLive(true, 'live'); startCountdown(); return;
+      }
 
-          card.innerHTML = `
-            <div class="plane-icon">${arrow(a.track)}</div>
-            ${i === 0 ? '<div class="card-label">🎯 Closest Aircraft</div>' : ''}
-            <div class="flight-route">${callsign}</div>
-            <div class="flight-sub">${route} &nbsp;·&nbsp; ${a.dist.toFixed(1)} km away</div>
-            <div class="flight-stats">
-              <div class="stat"><div class="stat-label">Altitude</div><div class="stat-value">${alt}</div></div>
-              <div class="stat"><div class="stat-label">Speed</div><div class="stat-value">${spd}</div></div>
-              <div class="stat"><div class="stat-label">Heading</div><div class="stat-value">${hdg}</div></div>
-            </div>`;
-          c.appendChild(card);
-        });
+      const enriched = await Promise.all(aircraft.map(async (a) => {
+        const callsign = (a.flight || '').trim();
+        const [route, acInfo] = await Promise.all([lookupRoute(callsign), lookupAircraft(a.hex)]);
+        return { ...a, callsign, route, acInfo };
+      }));
+
+      setLive(true, 'live · ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}));
+      renderCards(enriched);
+      startCountdown();
+    } catch(e) {
+      showError(`Could not fetch flight data: ${e.message}`);
+      content.innerHTML = '';
+      setLive(false, 'error');
+      startCountdown();
     }
-  </script>
+  }
+
+  function renderCards(flights) {
+    const content = document.getElementById('mainContent');
+    const html = flights.map((f, i) => {
+      const isPrimary = i === 0;
+      const callsign = f.callsign || f.hex || 'Unknown';
+      const airline = f.route?.airline || guessAirline(callsign) || 'Unknown airline';
+      const from = f.route?.from || null;
+      const to   = f.route?.to   || null;
+      const fromCity = f.route?.fromCity || cityFor(from) || null;
+      const toCity   = f.route?.toCity   || cityFor(to)   || null;
+      const alt  = f.alt_baro ? Math.round(f.alt_baro).toLocaleString() : '—';
+      const spd  = f.gs ? Math.round(f.gs) : '—';
+      const hdg  = f.track != null ? Math.round(f.track) : '—';
+      const dist = f.dist.toFixed(1);
+      const acType = f.acInfo?.type || f.acInfo?.icaoType || f.t || null;
+      const reg  = f.acInfo?.reg || f.r || null;
+
+      const routeHtml = (from && to) ? `
+        <div class="route-airports">
+          <div>
+            <div class="airport-code">${from}</div>
+            ${fromCity ? `<div class="airport-city">${fromCity}</div>` : ''}
+          </div>
+          <div class="route-arrow">
+            <div class="route-line"></div>
+            <div class="route-plane">✈</div>
+          </div>
+          <div style="text-align:right">
+            <div class="airport-code">${to}</div>
+            ${toCity ? `<div class="airport-city" style="text-align:right">${toCity}</div>` : ''}
+          </div>
+        </div>` : `<div class="route-unknown">Route not available</div>`;
+
+      return `
+        <div class="flight-card ${isPrimary?'primary':''}" style="animation-delay:${i*0.06}s">
+          <div class="card-strip">
+            <div class="airline-badge">
+              <div class="airline-dot"></div>
+              <div class="airline-name">${airline}</div>
+            </div>
+            <div class="callsign-tag">${callsign}</div>
+          </div>
+          <div class="card-route">${routeHtml}</div>
+          ${isPrimary ? `<div class="dist-badge">📍 ${dist} km away · closest aircraft</div>` : ''}
+          ${(acType||reg) ? `<div class="aircraft-strip">🛩 ${[acType,reg].filter(Boolean).join(' · ')}</div>` : ''}
+          <div class="card-stats">
+            <div class="stat-cell"><div class="stat-l">Alt</div><div class="stat-v">${alt}<span class="unit">ft</span></div></div>
+            <div class="stat-cell"><div class="stat-l">Speed</div><div class="stat-v">${spd}<span class="unit">kts</span></div></div>
+            <div class="stat-cell"><div class="stat-l">Hdg</div><div class="stat-v">${hdg}<span class="unit">°</span></div></div>
+            <div class="stat-cell"><div class="stat-l">Dist</div><div class="stat-v">${dist}<span class="unit">km</span></div></div>
+          </div>
+        </div>`;
+    }).join('');
+
+    content.innerHTML = `<div class="section-label">aircraft overhead</div><div class="flights-list">${html}</div>`;
+  }
+</script>
 </body>
 </html>
