@@ -70,4 +70,608 @@
       background:var(--surface); border:1px solid var(--border);
       border-radius:20px; padding:6px 12px;
       font-size:11px; font-family:'DM Mono',monospace;
-      color:var(--muted); transition:a
+      color:var(--muted); transition:all 0.3s;
+    }
+
+    .live-pill.active { border-color:rgba(16,185,129,0.3); color:var(--green); }
+
+    .live-dot {
+      width:6px; height:6px; border-radius:50%;
+      background:var(--muted); transition:all 0.3s;
+    }
+
+    .live-pill.active .live-dot {
+      background:var(--green); box-shadow:0 0 6px var(--green);
+      animation:pulse 2s infinite;
+    }
+
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .location-info {
+      margin:20px 0 24px;
+      font-size:12px; font-family:'DM Mono',monospace;
+      color:var(--muted); min-height:16px;
+    }
+
+    .scan-btn {
+      width:100%;
+      background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);
+      color:#fff; border:none; border-radius:16px;
+      padding:18px; font-size:16px; font-weight:500;
+      font-family:'DM Sans',sans-serif;
+      cursor:pointer; transition:opacity 0.2s,transform 0.1s;
+      display:flex; align-items:center; justify-content:center;
+      gap:10px; margin-bottom:28px;
+    }
+
+    .scan-btn:active { transform:scale(0.98); opacity:0.9; }
+    .scan-btn:disabled { background:var(--surface2); color:var(--muted); cursor:default; }
+
+    .section-label {
+      font-size:10px; font-family:'DM Mono',monospace;
+      letter-spacing:1.5px; color:var(--muted);
+      text-transform:uppercase; margin-bottom:12px;
+    }
+
+    .flights-list { display:flex; flex-direction:column; gap:12px; }
+
+    /* Card */
+    .flight-card {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:20px; overflow:hidden;
+      animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1) both;
+      cursor:pointer; transition:border-color 0.2s;
+    }
+
+    .flight-card:active { border-color:var(--accent); }
+
+    .flight-card.primary {
+      border-color:rgba(59,130,246,0.35);
+      background:linear-gradient(160deg,#0d1525 0%,#0a1220 100%);
+    }
+
+    @keyframes slideUp {
+      from{opacity:0;transform:translateY(16px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+    /* Card strip */
+    .card-strip {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 16px 0;
+    }
+
+    .airline-badge { display:flex; align-items:center; gap:8px; }
+
+    .airline-dot {
+      width:8px; height:8px; border-radius:50%;
+      background:var(--accent); flex-shrink:0;
+    }
+
+    .flight-card.primary .airline-dot { background:var(--green); box-shadow:0 0 8px var(--green); }
+
+    .airline-name { font-size:11px; font-weight:500; color:var(--muted); }
+    .flight-card.primary .airline-name { color:var(--green); }
+
+    .callsign-tag {
+      font-family:'DM Mono',monospace; font-size:11px;
+      color:var(--muted); background:var(--subtle);
+      border-radius:6px; padding:3px 8px;
+    }
+
+    /* Route */
+    .card-route { padding:10px 16px 14px; }
+
+    .route-airports {
+      display:flex; align-items:center; margin-bottom:3px;
+    }
+
+    .airport-code {
+      font-family:'Syne',sans-serif; font-size:30px; font-weight:800;
+      letter-spacing:-1px; line-height:1; color:var(--text);
+    }
+
+    .flight-card.primary .airport-code { font-size:34px; }
+
+    .route-arrow {
+      flex:1; display:flex; align-items:center;
+      padding:0 8px; position:relative;
+    }
+
+    .route-line {
+      flex:1; height:1px;
+      background:linear-gradient(90deg,var(--border),var(--accent),var(--border));
+    }
+
+    .route-plane {
+      position:absolute; left:50%; transform:translateX(-50%);
+      font-size:14px; top:-9px;
+    }
+
+    .airport-city {
+      font-size:11px; color:var(--muted); margin-top:2px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+      max-width:110px;
+    }
+
+    .route-unknown {
+      font-family:'DM Mono',monospace; font-size:13px;
+      color:var(--muted); padding:6px 0 4px; font-style:italic;
+    }
+
+    /* Stats row */
+    .card-stats {
+      display:grid; grid-template-columns:repeat(4,1fr);
+      border-top:1px solid var(--border);
+    }
+
+    .stat-cell { padding:10px 12px; border-right:1px solid var(--border); }
+    .stat-cell:last-child { border-right:none; }
+
+    .stat-l {
+      font-size:9px; font-family:'DM Mono',monospace;
+      color:var(--muted); text-transform:uppercase;
+      letter-spacing:0.5px; margin-bottom:3px;
+    }
+
+    .stat-v {
+      font-family:'DM Mono',monospace; font-size:13px;
+      font-weight:500; color:var(--text); white-space:nowrap;
+    }
+
+    .stat-v .unit { font-size:9px; color:var(--muted); }
+
+    /* Tap hint */
+    .tap-hint {
+      text-align:center; font-size:9px;
+      font-family:'DM Mono',monospace; color:var(--subtle);
+      padding:6px 0 10px; letter-spacing:0.5px;
+    }
+
+    /* Drill-down panel */
+    .drill-panel {
+      display:none;
+      border-top:1px solid var(--border);
+      background:var(--surface2);
+      padding:16px;
+      animation:expandIn 0.2s ease;
+    }
+
+    @keyframes expandIn { from{opacity:0;transform:scaleY(0.95)} to{opacity:1;transform:scaleY(1)} }
+
+    .drill-grid {
+      display:grid; grid-template-columns:repeat(3,1fr); gap:12px;
+      margin-bottom:12px;
+    }
+
+    .drill-cell .d-label {
+      font-size:8px; font-family:'DM Mono',monospace;
+      color:var(--muted); text-transform:uppercase;
+      letter-spacing:1px; margin-bottom:4px;
+    }
+
+    .drill-cell .d-val {
+      font-family:'DM Mono',monospace; font-size:14px; color:var(--text);
+    }
+
+    .compass-row {
+      display:flex; align-items:center; gap:12px;
+      padding-top:12px; border-top:1px solid var(--border);
+    }
+
+    .compass-wrap {
+      width:52px; height:52px; flex-shrink:0;
+      border:1px solid var(--border); border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      position:relative;
+    }
+
+    .compass-arrow {
+      font-size:24px; line-height:1;
+      color:var(--accent2);
+      filter:drop-shadow(0 0 4px var(--accent2));
+      transition:transform 0.5s ease;
+    }
+
+    .compass-info { flex:1; }
+    .compass-label { font-size:10px; font-family:'DM Mono',monospace; color:var(--muted); margin-bottom:4px; }
+    .compass-value { font-size:13px; font-family:'DM Mono',monospace; color:var(--text); }
+    .compass-note-small { font-size:9px; color:var(--muted); margin-top:3px; font-style:italic; }
+
+    /* Badges */
+    .dist-badge {
+      display:inline-flex; align-items:center; gap:4px;
+      background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2);
+      border-radius:8px; padding:4px 8px;
+      font-size:10px; font-family:'DM Mono',monospace;
+      color:var(--accent2); margin:0 16px 10px;
+    }
+
+    .aircraft-strip {
+      padding:0 16px 10px; font-size:11px; color:var(--muted);
+      font-family:'DM Mono',monospace;
+    }
+
+    /* States */
+    .state-box { text-align:center; padding:48px 24px; color:var(--muted); }
+    .state-icon { font-size:48px; margin-bottom:16px; display:block; }
+    .state-title { font-family:'Syne',sans-serif; font-size:18px; color:var(--text); margin-bottom:8px; }
+    .state-sub { font-size:13px; line-height:1.6; }
+
+    .spinner {
+      width:32px; height:32px;
+      border:2px solid var(--border); border-top-color:var(--accent);
+      border-radius:50%; animation:spin 0.7s linear infinite;
+      margin:48px auto 16px;
+    }
+
+    @keyframes spin { to{transform:rotate(360deg)} }
+
+    .spinner-label {
+      text-align:center; font-size:12px;
+      font-family:'DM Mono',monospace; color:var(--muted); margin-bottom:8px;
+    }
+
+    .refresh-bar {
+      margin-top:20px; display:flex; align-items:center;
+      justify-content:center; gap:8px;
+      font-size:11px; font-family:'DM Mono',monospace; color:var(--muted);
+    }
+
+    .refresh-progress { width:60px; height:2px; background:var(--border); border-radius:2px; overflow:hidden; }
+    .refresh-fill { height:100%; background:var(--accent); border-radius:2px; transition:width 1s linear; }
+
+    .error-card {
+      background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.2);
+      border-radius:14px; padding:14px 16px;
+      font-size:12px; color:#fca5a5; line-height:1.6;
+      font-family:'DM Mono',monospace; display:none; margin-bottom:16px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">✈️</div>
+      <h1>Overhead</h1>
+    </div>
+    <div class="live-pill" id="livePill">
+      <div class="live-dot"></div>
+      <span id="liveLabel">offline</span>
+    </div>
+  </div>
+
+  <div class="location-info" id="locationInfo">Waiting for location...</div>
+  <button class="scan-btn" id="scanBtn" onclick="startTracking()"><span>📍</span> Find Flights Above Me</button>
+  <div class="error-card" id="errorCard"></div>
+  <div id="mainContent"></div>
+  <div class="refresh-bar" id="refreshBar" style="display:none">
+    <span id="refreshLabel">refreshing in 15s</span>
+    <div class="refresh-progress"><div class="refresh-fill" id="refreshFill" style="width:100%"></div></div>
+  </div>
+
+</div>
+<script>
+const AIRLINES = {
+  EZY:'easyJet',BAW:'British Airways',RYR:'Ryanair',TOM:'TUI Airways',
+  TCX:'TUI Airways',VIR:'Virgin Atlantic',EXS:'Jet2',DLH:'Lufthansa',
+  AFR:'Air France',KLM:'KLM',IBE:'Iberia',AZA:'ITA Airways',
+  UAE:'Emirates',QTR:'Qatar Airways',ETD:'Etihad',SIA:'Singapore Airlines',
+  AAL:'American Airlines',UAL:'United Airlines',DAL:'Delta Air Lines',
+  SWA:'Southwest',ACA:'Air Canada',WJA:'WestJet',QFA:'Qantas',
+  ANZ:'Air New Zealand',CPA:'Cathay Pacific',ANA:'ANA',JAL:'Japan Airlines',
+  CSN:'China Southern',CCA:'Air China',THY:'Turkish Airlines',
+  AEE:'Aegean Airlines',BEL:'Brussels Airlines',SAS:'Scandinavian Airlines',
+  FIN:'Finnair',TAP:'TAP Air Portugal',LOT:'LOT Polish',WZZ:'Wizz Air',
+  VLG:'Vueling',IBX:'Iberia Express',EIN:'Aer Lingus',LOG:'Loganair',
+  TRA:'Transavia',SXS:'SunExpress',FDB:'flydubai',GFA:'Gulf Air',
+  SVA:'Saudia',MSR:'EgyptAir',RAM:'Royal Air Maroc',ETH:'Ethiopian',
+  KQA:'Kenya Airways',NKS:'Spirit',FFT:'Frontier',
+};
+
+const CITIES = {
+  LHR:'London',LGW:'London',STN:'London',LTN:'London',LCY:'London',
+  MAN:'Manchester',BHX:'Birmingham',EDI:'Edinburgh',GLA:'Glasgow',
+  BRS:'Bristol',NCL:'Newcastle',LBA:'Leeds',EMA:'East Midlands',
+  ABZ:'Aberdeen',INV:'Inverness',BFS:'Belfast',DUB:'Dublin',
+  CDG:'Paris',ORY:'Paris',AMS:'Amsterdam',FRA:'Frankfurt',
+  MUC:'Munich',BCN:'Barcelona',MAD:'Madrid',FCO:'Rome',
+  MXP:'Milan',ZRH:'Zurich',VIE:'Vienna',CPH:'Copenhagen',
+  ARN:'Stockholm',OSL:'Oslo',HEL:'Helsinki',LIS:'Lisbon',
+  ATH:'Athens',IST:'Istanbul',DXB:'Dubai',AUH:'Abu Dhabi',
+  DOH:'Doha',JFK:'New York',LAX:'Los Angeles',ORD:'Chicago',
+  ATL:'Atlanta',DFW:'Dallas',MIA:'Miami',BOS:'Boston',
+  SFO:'San Francisco',YYZ:'Toronto',SYD:'Sydney',SIN:'Singapore',
+  HKG:'Hong Kong',NRT:'Tokyo',HND:'Tokyo',ICN:'Seoul',
+  PEK:'Beijing',PVG:'Shanghai',BKK:'Bangkok',DEL:'Delhi',BOM:'Mumbai',
+};
+
+let userLat=null, userLon=null, compassHeading=null;
+let countdown=15, countdownTimer=null;
+const REFRESH=15, MIN_SPD=50;
+
+function setLive(on,label) {
+  const p=document.getElementById('livePill');
+  p.className='live-pill'+(on?' active':'');
+  document.getElementById('liveLabel').textContent=label||(on?'live':'offline');
+}
+
+function showError(msg) {
+  const el=document.getElementById('errorCard');
+  el.textContent=msg; el.style.display=msg?'block':'none';
+}
+
+// Compass
+function initCompass() {
+  if(typeof DeviceOrientationEvent==='undefined') return;
+  const listen=()=>{
+    window.addEventListener('deviceorientationabsolute',onOrient,true);
+    window.addEventListener('deviceorientation',onOrient,true);
+  };
+  if(typeof DeviceOrientationEvent.requestPermission==='function') {
+    DeviceOrientationEvent.requestPermission()
+      .then(s=>{ if(s==='granted') listen(); })
+      .catch(()=>{});
+  } else { listen(); }
+}
+
+function onOrient(e) {
+  if(e.webkitCompassHeading!=null) compassHeading=e.webkitCompassHeading;
+  else if(e.alpha!=null) compassHeading=(360-e.alpha+360)%360;
+  updateArrows();
+}
+
+function bearingTo(lat2,lon2) {
+  if(userLat==null) return null;
+  const dL=(lon2-userLon)*Math.PI/180,la1=userLat*Math.PI/180,la2=lat2*Math.PI/180;
+  const y=Math.sin(dL)*Math.cos(la2);
+  const x=Math.cos(la1)*Math.sin(la2)-Math.sin(la1)*Math.cos(la2)*Math.cos(dL);
+  return((Math.atan2(y,x)*180/Math.PI)+360)%360;
+}
+
+function relAngle(b) {
+  if(compassHeading==null) return null;
+  return((b-compassHeading)+360)%360;
+}
+
+function updateArrows() {
+  document.querySelectorAll('.compass-arrow[data-bearing]').forEach(el=>{
+    const rel=relAngle(parseFloat(el.dataset.bearing));
+    if(rel!=null) el.style.transform=`rotate(${rel}deg)`;
+  });
+}
+
+function staticArrow(b) {
+  return['↑','↗','→','↘','↓','↙','←','↖'][Math.round(b/45)%8];
+}
+
+function distKm(la1,lo1,la2,lo2) {
+  const R=6371,dL=(la2-la1)*Math.PI/180,dO=(lo2-lo1)*Math.PI/180;
+  const a=Math.sin(dL/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dO/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+function guessAirline(cs) {
+  if(!cs) return null;
+  return AIRLINES[cs.replace(/[0-9\s]/g,'').toUpperCase()]||null;
+}
+
+function cityFor(iata) { return iata?(CITIES[iata]||null):null; }
+
+async function lookupRoute(cs) {
+  if(!cs) return null;
+  try {
+    const r=await fetch(`https://api.adsbdb.com/v0/callsign/${cs.trim()}`);
+    if(!r.ok) return null;
+    const d=await r.json();
+    const rt=d?.response?.flightroute;
+    if(!rt) return null;
+    return {
+      from:rt.origin?.iata_code||rt.origin?.icao_code||null,
+      to:rt.destination?.iata_code||rt.destination?.icao_code||null,
+      fromCity:rt.origin?.municipality||null,
+      toCity:rt.destination?.municipality||null,
+      airline:rt.airline?.name||null,
+    };
+  } catch{return null;}
+}
+
+async function lookupAircraft(hex) {
+  if(!hex) return null;
+  try {
+    const r=await fetch(`https://api.adsbdb.com/v0/aircraft/${hex}`);
+    if(!r.ok) return null;
+    const d=await r.json();
+    const a=d?.response?.aircraft;
+    if(!a) return null;
+    return{type:a.type||null,icaoType:a.icao_type||null,reg:a.registration||null};
+  } catch{return null;}
+}
+
+function startTracking() {
+  const btn=document.getElementById('scanBtn');
+  btn.disabled=true; btn.innerHTML='<span>📡</span> Getting location…';
+  setLive(false,'locating'); showError('');
+  navigator.geolocation.getCurrentPosition(
+    pos=>{
+      userLat=pos.coords.latitude; userLon=pos.coords.longitude;
+      document.getElementById('locationInfo').textContent=
+        `${userLat.toFixed(4)}°N  ${Math.abs(userLon).toFixed(4)}°${userLon<0?'W':'E'}`;
+      btn.innerHTML='<span>🔄</span> Refresh now';
+      btn.disabled=false; btn.onclick=fetchFlights;
+      initCompass(); fetchFlights();
+    },
+    ()=>{
+      showError('Location denied — please allow in browser settings');
+      btn.disabled=false; btn.innerHTML='<span>📍</span> Find Flights Above Me';
+      setLive(false,'offline');
+    },
+    {enableHighAccuracy:true}
+  );
+}
+
+function startCountdown() {
+  clearInterval(countdownTimer); countdown=REFRESH;
+  const fill=document.getElementById('refreshFill');
+  const label=document.getElementById('refreshLabel');
+  document.getElementById('refreshBar').style.display='flex';
+  countdownTimer=setInterval(()=>{
+    countdown--;
+    fill.style.width=(countdown/REFRESH*100)+'%';
+    label.textContent=`refreshing in ${countdown}s`;
+    if(countdown<=0){clearInterval(countdownTimer);fetchFlights();}
+  },1000);
+}
+
+async function fetchFlights() {
+  if(!userLat) return;
+  showError(''); setLive(false,'scanning');
+  document.getElementById('refreshBar').style.display='none';
+  document.getElementById('mainContent').innerHTML=
+    '<div class="spinner"></div><div class="spinner-label">scanning the skies…</div>';
+
+  try {
+    const res=await fetch(`https://api.airplanes.live/v2/point/${userLat}/${userLon}/50`);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+
+    const airborne=(data.ac||[])
+      .filter(a=>{
+        if(a.on_ground) return false;
+        if(a.gs!=null&&a.gs<MIN_SPD) return false;
+        if(a.alt_baro!=null&&a.alt_baro<300) return false;
+        return a.lat&&a.lon;
+      })
+      .map(a=>({...a,dist:distKm(userLat,userLon,a.lat,a.lon)}))
+      .sort((a,b)=>a.dist-b.dist)
+      .slice(0,5);
+
+    if(!airborne.length) {
+      document.getElementById('mainContent').innerHTML=`
+        <div class="state-box">
+          <span class="state-icon">🌤️</span>
+          <div class="state-title">Clear skies</div>
+          <div class="state-sub">No airborne aircraft within 50km right now</div>
+        </div>`;
+      setLive(true,'live'); startCountdown(); return;
+    }
+
+    const enriched=await Promise.all(airborne.map(async a=>{
+      const callsign=(a.flight||'').trim();
+      const [route,acInfo]=await Promise.all([lookupRoute(callsign),lookupAircraft(a.hex)]);
+      return{...a,callsign,route,acInfo};
+    }));
+
+    setLive(true,'live · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
+    renderCards(enriched);
+    startCountdown();
+  } catch(e) {
+    showError(`Could not fetch: ${e.message}`);
+    document.getElementById('mainContent').innerHTML='';
+    setLive(false,'error'); startCountdown();
+  }
+}
+
+function renderCards(flights) {
+  const content=document.getElementById('mainContent');
+  const cards=flights.map((f,i)=>{
+    const isPrimary=i===0;
+    const cs=f.callsign||f.hex||'Unknown';
+    const airline=f.route?.airline||guessAirline(cs)||'Unknown airline';
+    const from=f.route?.from||null, to=f.route?.to||null;
+    const fromCity=f.route?.fromCity||cityFor(from)||from;
+    const toCity=f.route?.toCity||cityFor(to)||to;
+    const alt=f.alt_baro?Math.round(f.alt_baro).toLocaleString():'—';
+    const spd=f.gs?Math.round(f.gs):'—';
+    const hdg=f.track!=null?Math.round(f.track)+'°':'—';
+    const dist=f.dist.toFixed(1);
+    const acType=f.acInfo?.type||f.acInfo?.icaoType||f.t||null;
+    const reg=f.acInfo?.reg||f.r||null;
+    const bearing=bearingTo(f.lat,f.lon);
+    const initRel=(compassHeading!=null&&bearing!=null)?relAngle(bearing):null;
+    const initStyle=initRel!=null?`style="transform:rotate(${initRel}deg)"`:' ';
+    const bAttr=bearing!=null?`data-bearing="${bearing.toFixed(1)}"`:' ';
+    const arrow=bearing!=null?staticArrow(bearing):'✈';
+    const compassAvail=typeof DeviceOrientationEvent!=='undefined';
+
+    const routeHtml=(from&&to)?`
+      <div class="route-airports">
+        <div>
+          <div class="airport-code">${from}</div>
+          ${fromCity?`<div class="airport-city">${fromCity}</div>`:''}
+        </div>
+        <div class="route-arrow">
+          <div class="route-line"></div>
+          <div class="route-plane">✈</div>
+        </div>
+        <div style="text-align:right">
+          <div class="airport-code">${to}</div>
+          ${toCity?`<div class="airport-city" style="text-align:right">${toCity}</div>`:''}
+        </div>
+      </div>`
+    :`<div class="route-unknown">Route not available</div>`;
+
+    return `
+      <div class="flight-card ${isPrimary?'primary':''}" style="animation-delay:${i*0.06}s" onclick="toggleDrill('drill-${i}')">
+        <div class="card-strip">
+          <div class="airline-badge">
+            <div class="airline-dot"></div>
+            <div class="airline-name">${airline}</div>
+          </div>
+          <div class="callsign-tag">${cs}</div>
+        </div>
+        <div class="card-route">${routeHtml}</div>
+        ${isPrimary?`<div class="dist-badge">📍 ${dist} km · closest aircraft</div>`:''}
+        ${(acType||reg)?`<div class="aircraft-strip">🛩 ${[acType,reg].filter(Boolean).join(' · ')}</div>`:''}
+        <div class="card-stats">
+          <div class="stat-cell"><div class="stat-l">Alt</div><div class="stat-v">${alt}<span class="unit"> ft</span></div></div>
+          <div class="stat-cell"><div class="stat-l">Speed</div><div class="stat-v">${spd}<span class="unit"> kts</span></div></div>
+          <div class="stat-cell"><div class="stat-l">Hdg</div><div class="stat-v">${hdg}</div></div>
+          <div class="stat-cell"><div class="stat-l">Dist</div><div class="stat-v">${dist}<span class="unit"> km</span></div></div>
+        </div>
+        <div class="tap-hint">tap for more ↓</div>
+
+        <div class="drill-panel" id="drill-${i}">
+          <div class="drill-grid">
+            ${fromCity?`<div class="drill-cell"><div class="d-label">From</div><div class="d-val" style="font-size:13px">${fromCity}</div></div>`:''}
+            ${toCity?`<div class="drill-cell"><div class="d-label">To</div><div class="d-val" style="font-size:13px">${toCity}</div></div>`:''}
+            ${(acType)?`<div class="drill-cell"><div class="d-label">Aircraft</div><div class="d-val" style="font-size:13px">${acType}</div></div>`:''}
+            ${reg?`<div class="drill-cell"><div class="d-label">Reg</div><div class="d-val" style="font-size:13px">${reg}</div></div>`:''}
+            <div class="drill-cell"><div class="d-label">Bearing</div><div class="d-val" style="font-size:13px">${bearing!=null?Math.round(bearing)+'° from you':'—'}</div></div>
+          </div>
+          <div class="compass-row">
+            <div class="compass-wrap">
+              <span class="compass-arrow" ${bAttr} ${initStyle}>${arrow}</span>
+            </div>
+            <div class="compass-info">
+              <div class="compass-label">LOOK THIS WAY</div>
+              <div class="compass-value">${bearing!=null?Math.round(bearing)+'° '+compassDir(bearing):'—'}</div>
+              <div class="compass-note-small">${compassHeading!=null?'Arrow updates with your phone orientation':'Hold phone flat, arrow shows direction to aircraft'}</div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  content.innerHTML=`
+    <div class="section-label">aircraft overhead</div>
+    <div class="flights-list">${cards}</div>`;
+}
+
+function compassDir(deg) {
+  const dirs=['N','NE','E','SE','S','SW','W','NW'];
+  return dirs[Math.round(deg/45)%8];
+}
+
+function toggleDrill(id) {
+  const el=document.getElementById(id);
+  if(!el) return;
+  const isOpen=el.style.display==='block';
+  document.querySelectorAll('.drill-panel').forEach(p=>{p.style.display='none';});
+  if(!isOpen) el.style.display='block';
+}
+</script>
+</body>
+</html>
