@@ -167,6 +167,21 @@
     .flight-card.private .airline-name { color:var(--purple); }
     .flight-card.cargo .airline-name { color:var(--amber); }
 
+    .airline-logo {
+      width:22px; height:22px; border-radius:5px;
+      object-fit:contain; background:#fff;
+      padding:2px; flex-shrink:0;
+      display:none;
+    }
+    .airline-logo.loaded { display:block; }
+
+    .horizon-tag {
+      font-size:9px; font-family:'Inconsolata',monospace;
+      color:var(--muted); background:var(--subtle);
+      border-radius:5px; padding:2px 7px; margin-left:4px;
+      letter-spacing:0.3px; white-space:nowrap;
+    }
+
     .callsign-tag {
       font-family:'Inconsolata',monospace; font-size:11px;
       color:var(--muted); background:var(--subtle);
@@ -658,7 +673,7 @@ async function fetchFlights() {
     '<div class="spinner"></div><div class="spinner-label">scanning the skies…</div>';
 
   try {
-    const res=await fetch(`https://api.airplanes.live/v2/point/${userLat}/${userLon}/50`);
+    const res=await fetch(`https://api.airplanes.live/v2/point/${userLat}/${userLon}/30`);
     if(!res.ok) throw new Error(`HTTP ${res.status}`);
     const data=await res.json();
 
@@ -678,7 +693,7 @@ async function fetchFlights() {
         <div class="state-box">
           <span class="state-icon">🌤️</span>
           <div class="state-title">Clear skies</div>
-          <div class="state-sub">No airborne aircraft within 50km right now</div>
+          <div class="state-sub">No airborne aircraft within 30km right now</div>
         </div>`;
       setLive(true,'live'); startCountdown(); return;
     }
@@ -772,23 +787,36 @@ function renderCards(flights) {
     }
 
     // Airline label for strip
-    const airlineLabel = isCommercial
-      ? airline
-      : classification.label;
+    const airlineLabel = isCommercial ? airline : classification.label;
+
+    // Airline logo — use airline ICAO prefix for logo lookup
+    const icaoPrefix = cs.replace(/[0-9\s]/g,'').toUpperCase();
+    const logoUrl = isCommercial && icaoPrefix
+      ? `https://www.flightaware.com/images/airline_logos/90p/${icaoPrefix}.png`
+      : null;
+
+    // Distance label
+    const distNum = parseFloat(dist);
+    const horizonTag = distNum > 20
+      ? '<span class="horizon-tag">on the horizon</span>'
+      : distNum > 10
+        ? '<span class="horizon-tag">nearby</span>'
+        : '';
 
     return `
       <div class="flight-card ${isPrimary?'primary':''} ${cardClass}" style="animation-delay:${i*0.06}s" onclick="toggleDrill('drill-${i}')">
         <div class="card-strip">
           <div class="airline-badge">
             <div class="airline-dot"></div>
-            <div class="airline-name">${airlineLabel}</div>
+            ${logoUrl ? `<img class="airline-logo" src="${logoUrl}" alt="${airlineLabel}" onload="this.classList.add('loaded')" onerror="this.style.display='none'">` : ''}
+            <div class="airline-name">${airlineLabel}${horizonTag}</div>
           </div>
           <div class="callsign-tag">${cs}</div>
         </div>
 
         <div class="card-route">${routeHtml}</div>
 
-        ${isPrimary?`<div class="dist-badge">📍 ${dist} km · closest aircraft</div>`:''}
+        ${isPrimary ? `<div class="dist-badge">📍 ${dist} km · ${distNum < 10 ? 'directly overhead' : distNum < 20 ? 'closest aircraft' : 'closest aircraft'}</div>` : ''}
         ${etaStr?`<div class="eta-badge">🛬 ${etaStr}</div>`:''}
         ${(acType||reg)?`<div class="aircraft-strip">🛩 ${[acType,reg].filter(Boolean).join(' · ')}</div>`:''}
 
