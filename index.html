@@ -765,16 +765,43 @@ async function lookupRoute(cs) {
     const d=await r.json();
     const rt=d?.response?.flightroute;
     if(!rt) return null;
+
+    const fromIata=rt.origin?.iata_code||rt.origin?.icao_code||null;
+    const toIata=rt.destination?.iata_code||rt.destination?.icao_code||null;
+    const originLat=rt.origin?.latitude||null;
+    const originLon=rt.origin?.longitude||null;
+    const destLat=rt.destination?.latitude||null;
+    const destLon=rt.destination?.longitude||null;
+
     return{
-      from:rt.origin?.iata_code||rt.origin?.icao_code||null,
-      to:rt.destination?.iata_code||rt.destination?.icao_code||null,
+      from:fromIata,
+      to:toIata,
       fromCity:rt.origin?.municipality||null,
       toCity:rt.destination?.municipality||null,
       airline:rt.airline?.name||null,
-      destLat:rt.destination?.latitude||null,
-      destLon:rt.destination?.longitude||null,
+      originLat, originLon,
+      destLat, destLon,
     };
   } catch{return null;}
+}
+
+// Sanity-check: does this route plausibly pass near the user's position?
+// We check if the user is within ~400km of the straight-line path between origin and destination.
+function routeMakesSense(route, planelat, planelon) {
+  const oLat=route.originLat, oLon=route.originLon;
+  const dLat=route.destLat,   dLon=route.destLon;
+  if(!oLat||!oLon||!dLat||!dLon) return true; // no coords to check, give benefit of doubt
+
+  // Find the closest point on the origin→dest great circle to the plane's position
+  // Simplified: just check if plane is within 500km of EITHER endpoint, OR
+  // within 300km of the midpoint. Good enough for our purposes.
+  const midLat=(oLat+dLat)/2, midLon=(oLon+dLon)/2;
+  const dFromOrigin = distKm(planelon, planelat, oLon, oLat);
+  const dFromDest   = distKm(planelon, planelat, dLon, dLat);
+  const dFromMid    = distKm(planelon, planelat, midLon, midLat);
+
+  // Route makes sense if plane is within 600km of origin, dest, or midpoint
+  return dFromOrigin<600 || dFromDest<600 || dFromMid<600;
 }
 
 async function lookupAircraft(hex) {
