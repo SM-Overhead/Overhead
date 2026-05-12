@@ -45,7 +45,7 @@
       padding:0 16px 40px;
     }
 
-    /* ── HERO SCREEN ─────────────────────────────────────────────────────── */
+    /* ── HERO ────────────────────────────────────────────────────────────── */
 
     #heroScreen {
       display:flex; flex-direction:column; align-items:center;
@@ -75,14 +75,9 @@
       margin-bottom:8px;
     }
 
-    .hero-sub {
-      font-size:14px; color:var(--muted); letter-spacing:0.2px;
-    }
+    .hero-sub { font-size:14px; color:var(--muted); letter-spacing:0.2px; }
 
-    /* RADAR */
-    .radar-wrap {
-      position:relative; width:220px; height:220px; margin-bottom:28px;
-    }
+    .radar-wrap { position:relative; width:220px; height:220px; margin-bottom:28px; }
 
     .radar {
       width:220px; height:220px; border-radius:50%;
@@ -101,19 +96,15 @@
     .r2 { width:33%; height:33%; }
     .r3 { width:100%; height:100%; border-color:rgba(59,130,246,0.25); }
 
-    /* crosshair lines */
     .radar::before, .radar::after {
-      content:''; position:absolute;
-      background:rgba(59,130,246,0.1);
+      content:''; position:absolute; background:rgba(59,130,246,0.1);
     }
     .radar::before { width:1px; height:100%; left:50%; top:0; }
     .radar::after  { width:100%; height:1px; top:50%; left:0; }
 
-    /* sweep */
     .radar-sweep {
       position:absolute; width:50%; height:50%;
-      top:0; left:50%;
-      transform-origin:0% 100%;
+      top:0; left:50%; transform-origin:0% 100%;
       animation:sweep 3s linear infinite;
       background:conic-gradient(from 0deg, transparent 300deg, rgba(59,130,246,0.35) 360deg);
       border-radius:0 100% 0 0;
@@ -127,7 +118,6 @@
       box-shadow:0 0 10px var(--accent);
     }
 
-    /* animated blips */
     .radar-blip {
       position:absolute; font-size:12px; opacity:0;
       animation:blipFade 3s ease-in-out infinite;
@@ -176,7 +166,7 @@
       font-family:'Inconsolata',monospace; letter-spacing:0.3px;
     }
 
-    /* ── POST-SCAN HEADER ────────────────────────────────────────────────── */
+    /* ── POST-SCAN ───────────────────────────────────────────────────────── */
 
     .header {
       padding:52px 0 8px;
@@ -188,8 +178,7 @@
     .logo-icon {
       width:36px; height:36px;
       background:linear-gradient(135deg,var(--accent),var(--accent2));
-      border-radius:10px;
-      display:flex; align-items:center; justify-content:center;
+      border-radius:10px; display:flex; align-items:center; justify-content:center;
       font-size:18px;
     }
 
@@ -225,7 +214,7 @@
     .location-info {
       margin:20px 0 8px;
       font-size:12px; font-family:'Inconsolata',monospace;
-      color:var(--muted); min-height:16px;
+      color:var(--muted);
     }
 
     .scan-btn {
@@ -256,10 +245,8 @@
       background:var(--surface); border:1px solid var(--border);
       border-radius:20px; overflow:hidden;
       animation:slideUp 0.35s cubic-bezier(0.16,1,0.3,1) both;
-      cursor:pointer; transition:border-color 0.2s;
+      cursor:pointer;
     }
-
-    .flight-card:active { border-color:var(--accent); }
 
     .flight-card.primary {
       border-color:rgba(59,130,246,0.35);
@@ -320,6 +307,7 @@
 
     .card-route { padding:10px 16px 14px; }
 
+    /* Full route: BIG IATA codes */
     .route-airports { display:flex; align-items:center; margin-bottom:3px; }
 
     .airport-code {
@@ -350,10 +338,45 @@
       max-width:110px;
     }
 
+    /* Partial route: "Departed EDI" */
+    .partial-route {
+      display:flex; align-items:center; gap:12px; padding:6px 0 4px;
+    }
+
+    .partial-airport {
+      font-family:'Syne',sans-serif; font-size:28px; font-weight:800;
+      letter-spacing:-1px; line-height:1; color:var(--text);
+    }
+
+    .flight-card.primary .partial-airport { font-size:32px; }
+
+    .partial-info { display:flex; flex-direction:column; gap:2px; }
+
+    .partial-label {
+      font-size:10px; color:var(--muted); font-family:'Inconsolata',monospace;
+      letter-spacing:0.5px; text-transform:uppercase;
+    }
+
+    .partial-city { font-size:13px; color:var(--text); font-weight:500; }
+
+    .partial-dest-unknown {
+      font-size:11px; color:var(--muted); font-style:italic; margin-top:2px;
+    }
+
+    /* Non-commercial aircraft display */
     .aircraft-class-display { padding:8px 0 4px; }
     .aircraft-class-icon { font-size:28px; line-height:1; margin-bottom:4px; display:block; }
     .aircraft-class-name { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; color:var(--text); letter-spacing:-0.5px; }
     .aircraft-class-detail { font-size:12px; color:var(--muted); margin-top:2px; }
+
+    /* Badges */
+    .dist-badge {
+      display:inline-flex; align-items:center; gap:4px;
+      background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2);
+      border-radius:8px; padding:4px 8px;
+      font-size:10px; font-family:'Inconsolata',monospace;
+      color:var(--accent2); margin:0 16px 10px;
+    }
 
     .eta-badge {
       display:inline-flex; align-items:center; gap:5px;
@@ -363,6 +386,12 @@
       color:var(--green); margin:0 16px 10px;
     }
 
+    .aircraft-strip {
+      padding:0 16px 10px; font-size:11px; color:var(--muted);
+      font-family:'Inconsolata',monospace;
+    }
+
+    /* Stats */
     .card-stats {
       display:grid; grid-template-columns:repeat(4,1fr);
       border-top:1px solid var(--border);
@@ -390,6 +419,7 @@
       padding:5px 0 8px; letter-spacing:0.5px;
     }
 
+    /* Drill panel */
     .drill-panel {
       display:none; border-top:1px solid var(--border);
       background:var(--surface2); padding:16px;
@@ -435,21 +465,7 @@
     .compass-value { font-size:14px; font-family:'Inconsolata',monospace; color:var(--text); }
     .compass-sub { font-size:9px; color:var(--muted); margin-top:3px; font-style:italic; }
 
-    .dist-badge {
-      display:inline-flex; align-items:center; gap:4px;
-      background:rgba(59,130,246,0.1); border:1px solid rgba(59,130,246,0.2);
-      border-radius:8px; padding:4px 8px;
-      font-size:10px; font-family:'Inconsolata',monospace;
-      color:var(--accent2); margin:0 16px 10px;
-    }
-
-    .aircraft-strip {
-      padding:0 16px 10px; font-size:11px; color:var(--muted);
-      font-family:'Inconsolata',monospace;
-    }
-
-    /* ── STATES ──────────────────────────────────────────────────────────── */
-
+    /* States */
     .state-box { text-align:center; padding:48px 24px; color:var(--muted); }
     .state-icon { font-size:48px; margin-bottom:16px; display:block; }
     .state-title { font-family:'Syne',sans-serif; font-size:18px; color:var(--text); margin-bottom:8px; }
@@ -490,14 +506,13 @@
 <body>
 <div class="app">
 
-  <!-- ── HERO LANDING SCREEN ─────────────────────────────────────────── -->
+  <!-- HERO -->
   <div id="heroScreen">
     <div class="hero-top">
       <div class="hero-logo">✈</div>
       <div class="hero-title">Overhead</div>
       <div class="hero-sub">What's flying above you right now?</div>
     </div>
-
     <div class="radar-wrap">
       <div class="radar">
         <div class="radar-ring r1"></div>
@@ -510,18 +525,16 @@
         <div class="radar-blip b3">✈</div>
       </div>
     </div>
-
     <div class="hero-clock" id="heroClock">--:--</div>
     <div class="hero-tagline">Hear a plane? Tap below to identify<br>every aircraft flying above you.</div>
-
     <button class="hero-scan-btn" id="heroBtn" onclick="startTracking()">
       <span>📍</span> Scan the Sky Above Me
     </button>
     <div class="error-card" id="errorCard"></div>
-    <div class="hero-footer-note">Uses your location & live ADS-B transponder data</div>
+    <div class="hero-footer-note">Uses your location &amp; live ADS-B transponder data</div>
   </div>
 
-  <!-- ── POST-SCAN UI ────────────────────────────────────────────────── -->
+  <!-- POST-SCAN -->
   <div id="postScan" style="display:none">
     <div class="header">
       <div class="logo">
@@ -534,7 +547,7 @@
       </div>
     </div>
     <div class="location-info" id="locationInfo"></div>
-    <button class="scan-btn" id="scanBtn" onclick="fetchFlights()"><span>🔄</span> Refresh Now 1.0</button>
+    <button class="scan-btn" id="scanBtn" onclick="fetchFlights()"><span>🔄</span> Refresh Now</button>
   </div>
 
   <div id="mainContent"></div>
@@ -610,12 +623,11 @@ const REFRESH=15, MIN_SPD=50;
 // ── Clock ─────────────────────────────────────────────────────────────────────
 
 function tickClock() {
-  const t = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-  const el = document.getElementById('heroClock');
-  if(el) el.textContent = t;
+  const t=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  const el=document.getElementById('heroClock');
+  if(el) el.textContent=t;
 }
-tickClock();
-setInterval(tickClock, 1000);
+tickClock(); setInterval(tickClock,1000);
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -644,7 +656,40 @@ function guessAirline(cs) {
 
 function cityFor(iata) { return iata?(CITIES[iata]||null):null; }
 function compassDir(deg) { return['N','NE','E','SE','S','SW','W','NW'][Math.round(deg/45)%8]; }
-function staticArrow(b) { return['↑','↗','→','↘','↓','↙','←','↖'][Math.round(b/45)%8]; }
+function staticArrow(b)  { return['↑','↗','→','↘','↓','↙','←','↖'][Math.round(b/45)%8]; }
+
+// ── Route sanity check ────────────────────────────────────────────────────────
+// If a plane is over Scotland but the route says Munich→Berlin, something's wrong.
+// We check: is the plane's position within a reasonable corridor of the route?
+// Strategy: the plane should be within 500km of at least one of the airports,
+// AND both airports shouldn't be on the same side of the world away from the plane.
+
+function routeMakesSense(route, planeLat, planeLon) {
+  const oLat=parseFloat(route.originLat), oLon=parseFloat(route.originLon);
+  const dLat=parseFloat(route.destLat),   dLon=parseFloat(route.destLon);
+
+  // If we don't have coords for both ends, give benefit of the doubt
+  if(isNaN(oLat)||isNaN(oLon)||isNaN(dLat)||isNaN(dLon)) return true;
+
+  const dFromOrigin = distKm(planeLat, planeLon, oLat, oLon);
+  const dFromDest   = distKm(planeLat, planeLon, dLat, dLon);
+
+  // The total route distance
+  const routeLen = distKm(oLat, oLon, dLat, dLon);
+
+  // Plane should be within (routeLen + 400km) of both airports combined.
+  // i.e. the sum of distances from plane to each airport shouldn't be more
+  // than ~1.5x the direct route distance. This catches "totally wrong continent" cases.
+  const planePathLen = dFromOrigin + dFromDest;
+
+  // Also: plane must be within 600km of at least one endpoint
+  const nearAnEndpoint = dFromOrigin < 600 || dFromDest < 600;
+
+  // Sane if: plane is near the route corridor AND near at least one endpoint
+  return (planePathLen < routeLen * 1.8 + 400) && nearAnEndpoint;
+}
+
+// ── Classification ────────────────────────────────────────────────────────────
 
 function classifyAircraft(f) {
   const cs=(f.callsign||'').toUpperCase();
@@ -654,7 +699,7 @@ function classifyAircraft(f) {
     return{label:'Military Aircraft',icon:'🎖️',detail:'Military / government flight',cardClass:'military'};
   if(CARGO_CALLSIGNS.some(p=>cs.startsWith(p)))
     return{label:'Cargo Flight',icon:'📦',detail:'Freight / cargo operation',cardClass:'cargo'};
-  if(['H60','EC35','EC45','B06','R44','R22','AS50','S76','AW139','H145'].some(t=>type.includes(t))||spd<150&&alt<5000)
+  if(['H60','EC35','EC45','B06','R44','R22','AS50','S76','AW139','H145'].some(t=>type.includes(t))||(spd<150&&alt<5000))
     return{label:'Helicopter',icon:'🚁',detail:type||'Rotary wing aircraft',cardClass:'private'};
   if(spd<200&&alt<10000)
     return{label:'Light Aircraft',icon:'🛩️',detail:type?`${type} · Private or training flight`:'Small private or training aircraft',cardClass:'private'};
@@ -663,11 +708,12 @@ function classifyAircraft(f) {
   return{label:'Private Aircraft',icon:'🛩️',detail:type?`${type} · General aviation`:'General aviation flight',cardClass:'private'};
 }
 
+// ── ETA ───────────────────────────────────────────────────────────────────────
+
 function etaMinutes(f,toLat,toLon) {
   if(!f.gs||f.gs<50||!toLat||!toLon) return null;
   const remainKm=distKm(f.lat,f.lon,toLat,toLon);
-  const spdKmh=f.gs*1.852;
-  return Math.round((remainKm/spdKmh)*60);
+  return Math.round((remainKm/(f.gs*1.852))*60);
 }
 
 function formatEta(mins) {
@@ -686,8 +732,8 @@ function initCompass() {
     window.addEventListener('deviceorientation',onOrient,true);
   };
   if(typeof DeviceOrientationEvent.requestPermission==='function') {
-    DeviceOrientationEvent.requestPermission().then(s=>{ if(s==='granted') listen(); }).catch(()=>{});
-  } else { listen(); }
+    DeviceOrientationEvent.requestPermission().then(s=>{if(s==='granted')listen();}).catch(()=>{});
+  } else {listen();}
 }
 
 function onOrient(e) {
@@ -722,19 +768,14 @@ function startTracking() {
   const btn=document.getElementById('heroBtn');
   btn.disabled=true; btn.innerHTML='<span>📡</span> Getting location…';
   showError('');
-
   navigator.geolocation.getCurrentPosition(
     pos=>{
       userLat=pos.coords.latitude; userLon=pos.coords.longitude;
-
-      // Swap hero for app UI
       document.getElementById('heroScreen').style.display='none';
       document.getElementById('postScan').style.display='block';
       document.getElementById('locationInfo').textContent=
         `${userLat.toFixed(4)}°N  ${Math.abs(userLon).toFixed(4)}°${userLon<0?'W':'E'}`;
-
-      initCompass();
-      fetchFlights();
+      initCompass(); fetchFlights();
     },
     ()=>{
       showError('Location denied — please allow in browser settings and try again');
@@ -757,6 +798,8 @@ function startCountdown() {
   },1000);
 }
 
+// ── API calls ─────────────────────────────────────────────────────────────────
+
 async function lookupRoute(cs) {
   if(!cs) return null;
   try {
@@ -765,43 +808,18 @@ async function lookupRoute(cs) {
     const d=await r.json();
     const rt=d?.response?.flightroute;
     if(!rt) return null;
-
-    const fromIata=rt.origin?.iata_code||rt.origin?.icao_code||null;
-    const toIata=rt.destination?.iata_code||rt.destination?.icao_code||null;
-    const originLat=rt.origin?.latitude||null;
-    const originLon=rt.origin?.longitude||null;
-    const destLat=rt.destination?.latitude||null;
-    const destLon=rt.destination?.longitude||null;
-
-    return{
-      from:fromIata,
-      to:toIata,
-      fromCity:rt.origin?.municipality||null,
-      toCity:rt.destination?.municipality||null,
-      airline:rt.airline?.name||null,
-      originLat, originLon,
-      destLat, destLon,
+    return {
+      from:     rt.origin?.iata_code||rt.origin?.icao_code||null,
+      to:       rt.destination?.iata_code||rt.destination?.icao_code||null,
+      fromCity: rt.origin?.municipality||null,
+      toCity:   rt.destination?.municipality||null,
+      airline:  rt.airline?.name||null,
+      originLat:  rt.origin?.latitude||null,
+      originLon:  rt.origin?.longitude||null,
+      destLat:    rt.destination?.latitude||null,
+      destLon:    rt.destination?.longitude||null,
     };
   } catch{return null;}
-}
-
-// Sanity-check: does this route plausibly pass near the user's position?
-// We check if the user is within ~400km of the straight-line path between origin and destination.
-function routeMakesSense(route, planelat, planelon) {
-  const oLat=route.originLat, oLon=route.originLon;
-  const dLat=route.destLat,   dLon=route.destLon;
-  if(!oLat||!oLon||!dLat||!dLon) return true; // no coords to check, give benefit of doubt
-
-  // Find the closest point on the origin→dest great circle to the plane's position
-  // Simplified: just check if plane is within 500km of EITHER endpoint, OR
-  // within 300km of the midpoint. Good enough for our purposes.
-  const midLat=(oLat+dLat)/2, midLon=(oLon+dLon)/2;
-  const dFromOrigin = distKm(planelon, planelat, oLon, oLat);
-  const dFromDest   = distKm(planelon, planelat, dLon, dLat);
-  const dFromMid    = distKm(planelon, planelat, midLon, midLat);
-
-  // Route makes sense if plane is within 600km of origin, dest, or midpoint
-  return dFromOrigin<600 || dFromDest<600 || dFromMid<600;
 }
 
 async function lookupAircraft(hex) {
@@ -869,67 +887,113 @@ async function fetchFlights() {
 
 function renderCards(flights) {
   const content=document.getElementById('mainContent');
+
   const cards=flights.map((f,i)=>{
     const isPrimary=i===0;
     const cs=f.callsign||f.hex||'?????';
-    const from=f.route?.from||null, to=f.route?.to||null;
-    const fromCity=f.route?.fromCity||cityFor(from)||from;
-    const toCity=f.route?.toCity||cityFor(to)||to;
-    const airline=f.route?.airline||guessAirline(cs)||null;
-    const isCommercial=!!(from&&to&&airline);
-    const classification=!isCommercial?classifyAircraft(f):null;
-    const cardClass=classification?classification.cardClass:'';
-
+    const acType=f.acInfo?.type||f.acInfo?.icaoType||f.t||null;
+    const reg=f.acInfo?.reg||f.r||null;
     const alt=f.alt_baro?Math.round(f.alt_baro).toLocaleString():'—';
     const spd=f.gs?Math.round(f.gs):'—';
     const hdg=f.track!=null?Math.round(f.track)+'°':'—';
     const dist=f.dist.toFixed(1);
     const distNum=parseFloat(dist);
-    const acType=f.acInfo?.type||f.acInfo?.icaoType||f.t||null;
-    const reg=f.acInfo?.reg||f.r||null;
 
+    // ── Route resolution ──────────────────────────────────────────────────
+    let from=f.route?.from||null;
+    let to=f.route?.to||null;
+    let fromCity=f.route?.fromCity||cityFor(from)||from;
+    let toCity=f.route?.toCity||cityFor(to)||to;
+    let airline=f.route?.airline||guessAirline(cs)||null;
+
+    // Sanity-check the route against the plane's actual position
+    let routeSane = true;
+    if(from && to && f.route?.originLat && f.route?.destLat) {
+      routeSane = routeMakesSense(f.route, f.lat, f.lon);
+    }
+
+    // If route is nonsensical, discard the to/from but keep the airline name
+    if(!routeSane) { from=null; to=null; fromCity=null; toCity=null; }
+
+    // Determine display mode:
+    // 'full'    — we have both from and to and they make sense
+    // 'partial' — we only have origin (helicopter / short hop)
+    // 'class'   — unknown, show aircraft classification
+    const hasFullRoute = !!(from && to && airline);
+    const hasPartialRoute = !!(from && !to);
+
+    const classification = (!hasFullRoute) ? classifyAircraft(f) : null;
+    const cardClass = classification ? classification.cardClass : '';
+
+    // ETA
     let etaStr=null;
-    if(to&&f.gs){
-      let dLat=f.route?.destLat,dLon=f.route?.destLon;
-      if((!dLat||!dLon)&&AIRPORT_COORDS[to])[dLat,dLon]=AIRPORT_COORDS[to];
+    if(to && f.gs) {
+      let dLat=f.route?.destLat, dLon=f.route?.destLon;
+      if((!dLat||!dLon) && AIRPORT_COORDS[to]) { dLat=AIRPORT_COORDS[to][0]; dLon=AIRPORT_COORDS[to][1]; }
       if(dLat&&dLon) etaStr=formatEta(etaMinutes(f,dLat,dLon));
     }
 
+    // Compass
     const bearing=bearingTo(f.lat,f.lon);
     const initRel=(compassHeading!=null&&bearing!=null)?relAngle(bearing):null;
     const initStyle=initRel!=null?`style="transform:rotate(${initRel}deg)"`:' ';
     const bAttr=bearing!=null?`data-bearing="${bearing.toFixed(1)}"`:' ';
     const arrow=bearing!=null?staticArrow(bearing):'✈';
 
-    const airlineLabel=isCommercial?airline:classification.label;
-    const icaoPrefix=cs.replace(/[0-9\s]/g,'').toUpperCase();
-    const logoUrl=isCommercial&&icaoPrefix
-      ?`https://www.flightaware.com/images/airline_logos/90p/${icaoPrefix}.png`:null;
+    // Airline label + logo
+    const airlineLabel = hasFullRoute ? airline : (hasPartialRoute ? (airline||guessAirline(cs)||'Unknown') : classification.label);
+    const icaoPrefix = cs.replace(/[0-9\s]/g,'').toUpperCase();
+    const logoUrl = (hasFullRoute||hasPartialRoute) && icaoPrefix
+      ? `https://www.flightaware.com/images/airline_logos/90p/${icaoPrefix}.png` : null;
 
+    // Distance tag
     const horizonTag=distNum>20
       ?'<span class="horizon-tag">on the horizon</span>'
       :distNum>10?'<span class="horizon-tag">nearby</span>':'';
 
-    const routeHtml=isCommercial?`
-      <div class="route-airports">
-        <div>
-          <div class="airport-code">${from}</div>
-          ${fromCity?`<div class="airport-city">${fromCity}</div>`:''}
-        </div>
-        <div class="route-arrow">
-          <div class="route-line"></div>
-          <div class="route-plane">✈</div>
-        </div>
-        <div style="text-align:right">
-          <div class="airport-code">${to}</div>
-          ${toCity?`<div class="airport-city" style="text-align:right">${toCity}</div>`:''}
-        </div>
-      </div>`:`
-      <div class="aircraft-class-display">
-        <span class="aircraft-class-icon">${classification.icon}</span>
-        <div class="aircraft-class-name">${classification.label}</div>
-        <div class="aircraft-class-detail">${classification.detail}</div>
-      </div>`;
+    // ── Route HTML ────────────────────────────────────────────────────────
+    let routeHtml;
+
+    if(hasFullRoute) {
+      // Full origin → destination
+      routeHtml=`
+        <div class="route-airports">
+          <div>
+            <div class="airport-code">${from}</div>
+            ${fromCity?`<div class="airport-city">${fromCity}</div>`:''}
+          </div>
+          <div class="route-arrow">
+            <div class="route-line"></div>
+            <div class="route-plane">✈</div>
+          </div>
+          <div style="text-align:right">
+            <div class="airport-code">${to}</div>
+            ${toCity?`<div class="airport-city" style="text-align:right">${toCity}</div>`:''}
+          </div>
+        </div>`;
+
+    } else if(hasPartialRoute) {
+      // Only departure known — e.g. helicopter
+      const depCity = fromCity || cityFor(from) || from;
+      routeHtml=`
+        <div class="partial-route">
+          <div class="partial-airport">${from}</div>
+          <div class="partial-info">
+            <div class="partial-label">Departed</div>
+            ${depCity?`<div class="partial-city">${depCity}</div>`:''}
+            <div class="partial-dest-unknown">Destination unknown</div>
+          </div>
+        </div>`;
+
+    } else {
+      // No route at all — show aircraft classification
+      routeHtml=`
+        <div class="aircraft-class-display">
+          <span class="aircraft-class-icon">${classification.icon}</span>
+          <div class="aircraft-class-name">${classification.label}</div>
+          <div class="aircraft-class-detail">${classification.detail}${!routeSane?' · Route data unconfirmed':''}</div>
+        </div>`;
+    }
 
     return `
       <div class="flight-card ${isPrimary?'primary':''} ${cardClass}" style="animation-delay:${i*0.06}s" onclick="toggleDrill('drill-${i}')">
@@ -954,7 +1018,7 @@ function renderCards(flights) {
         <div class="tap-hint">tap for more ↓</div>
         <div class="drill-panel" id="drill-${i}">
           <div class="drill-grid">
-            ${fromCity&&fromCity!==from?`<div class="drill-cell"><div class="d-label">From</div><div class="d-val">${fromCity}</div></div>`:''}
+            ${fromCity&&fromCity!==from?`<div class="drill-cell"><div class="d-label">${hasPartialRoute?'Departed':'From'}</div><div class="d-val">${fromCity}</div></div>`:''}
             ${toCity&&toCity!==to?`<div class="drill-cell"><div class="d-label">To</div><div class="d-val">${toCity}</div></div>`:''}
             ${acType?`<div class="drill-cell"><div class="d-label">Aircraft</div><div class="d-val">${acType}</div></div>`:''}
             ${reg?`<div class="drill-cell"><div class="d-label">Reg</div><div class="d-val">${reg}</div></div>`:''}
