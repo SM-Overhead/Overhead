@@ -564,7 +564,7 @@
     <div class="hero-clock" id="heroClock">--:--</div>
     <div class="hero-tagline">Hear a plane? Tap below to identify<br>every aircraft flying above you.</div>
     <button class="hero-scan-btn" id="heroBtn" onclick="startTracking()">
-      <span>📍</span> Scan the Sky Above Me.
+      <span>📍</span> Scan the Sky Above Me
     </button>
     <div class="error-card" id="errorCard"></div>
     <div class="hero-footer-note">Uses your location &amp; live ADS-B transponder data</div>
@@ -694,35 +694,9 @@ function cityFor(iata) { return iata?(CITIES[iata]||null):null; }
 function compassDir(deg) { return['N','NE','E','SE','S','SW','W','NW'][Math.round(deg/45)%8]; }
 function staticArrow(b)  { return['↑','↗','→','↘','↓','↙','←','↖'][Math.round(b/45)%8]; }
 
-// ── Route sanity check ────────────────────────────────────────────────────────
-// Simple, reliable check: the plane's position should sit roughly between
-// the two airports — i.e. within the bounding box of the route plus a generous
-// padding. This catches truly absurd cases (Munich→Berlin over Scotland) without
-// incorrectly rejecting valid European routes (Edinburgh→Düsseldorf over Scotland).
-
-function routeMakesSense(route, planeLat, planeLon) {
-  const oLat=parseFloat(route.originLat), oLon=parseFloat(route.originLon);
-  const dLat=parseFloat(route.destLat),   dLon=parseFloat(route.destLon);
-
-  // No coords available — give benefit of the doubt
-  if(isNaN(oLat)||isNaN(oLon)||isNaN(dLat)||isNaN(dLon)) return true;
-
-  // How long is the route?
-  const routeLen = distKm(oLat, oLon, dLat, dLon);
-
-  // Padding grows with route length — short routes get 200km, long haul get 600km
-  const padding = Math.min(200 + routeLen * 0.4, 600);
-
-  // Build a padded bounding box around the route
-  const minLat = Math.min(oLat, dLat) - (padding / 111);
-  const maxLat = Math.max(oLat, dLat) + (padding / 111);
-  const lngScale = Math.cos(((oLat+dLat)/2) * Math.PI/180);
-  const minLon = Math.min(oLon, dLon) - (padding / (111 * lngScale));
-  const maxLon = Math.max(oLon, dLon) + (padding / (111 * lngScale));
-
-  return planeLat >= minLat && planeLat <= maxLat &&
-         planeLon >= minLon && planeLon <= maxLon;
-}
+// ── Route sanity check removed ────────────────────────────────────────────────
+// We trust adsbdb's route data as-is. Trying to second-guess it with geometry
+// caused more problems than it solved.
 
 // ── Classification ────────────────────────────────────────────────────────────
 
@@ -941,19 +915,10 @@ function renderCards(flights) {
     let toCity=f.route?.toCity||cityFor(to)||to;
     let airline=f.route?.airline||guessAirline(cs)||null;
 
-    // Sanity-check the route against the plane's actual position
-    let routeSane = true;
-    if(from && to && f.route?.originLat && f.route?.destLat) {
-      routeSane = routeMakesSense(f.route, f.lat, f.lon);
-    }
-
-    // If route is nonsensical, discard the to/from but keep the airline name
-    if(!routeSane) { from=null; to=null; fromCity=null; toCity=null; }
-
     // Determine display mode:
-    // 'full'    — we have both from and to and they make sense
+    // 'full'    — we have both from and to
     // 'partial' — we only have origin (helicopter / short hop)
-    // 'class'   — unknown, show aircraft classification
+    // 'class'   — nothing known, show aircraft classification
     const hasFullRoute = !!(from && to && airline);
     const hasPartialRoute = !!(from && !to);
 
@@ -1029,7 +994,7 @@ function renderCards(flights) {
         <div class="aircraft-class-display">
           <span class="aircraft-class-icon">${classification.icon}</span>
           <div class="aircraft-class-name">${classification.label}</div>
-          <div class="aircraft-class-detail">${classification.detail}${!routeSane?' · Route data unconfirmed':''}</div>
+          <div class="aircraft-class-detail">${classification.detail}</div>
         </div>`;
     }
 
