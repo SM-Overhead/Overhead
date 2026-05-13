@@ -501,6 +501,42 @@
       font-family:'Inconsolata',monospace; display:none; margin-bottom:16px;
       width:100%; max-width:340px;
     }
+
+    /* Contextual book link on flight cards */
+    .book-link {
+      display:block; margin:0 0 4px;
+      font-size:11px; font-family:'Inconsolata',monospace;
+      color:var(--accent2); text-decoration:none;
+      padding:4px 0;
+      transition:color 0.2s;
+    }
+    .book-link:hover { color:var(--accent); }
+
+    /* Bottom ad unit */
+    .ad-unit {
+      margin-top:16px;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:14px; padding:12px 16px;
+    }
+
+    .ad-label {
+      font-size:8px; font-family:'Inconsolata',monospace;
+      color:var(--muted); letter-spacing:1.5px;
+      text-transform:uppercase; margin-bottom:6px;
+    }
+
+    .ad-content {
+      font-size:12px; color:var(--muted);
+      display:flex; align-items:center; justify-content:space-between;
+      flex-wrap:wrap; gap:8px;
+    }
+
+    .ad-link {
+      font-size:12px; color:var(--accent2);
+      text-decoration:none; font-weight:500;
+      white-space:nowrap;
+    }
+    .ad-link:hover { color:var(--accent); }
   </style>
 </head>
 <body>
@@ -528,7 +564,7 @@
     <div class="hero-clock" id="heroClock">--:--</div>
     <div class="hero-tagline">Hear a plane? Tap below to identify<br>every aircraft flying above you.</div>
     <button class="hero-scan-btn" id="heroBtn" onclick="startTracking()">
-      <span>📍</span> Scan the Sky Above Me
+      <span>📍</span> Scan the Sky Above Me.
     </button>
     <div class="error-card" id="errorCard"></div>
     <div class="hero-footer-note">Uses your location &amp; live ADS-B transponder data</div>
@@ -659,34 +695,33 @@ function compassDir(deg) { return['N','NE','E','SE','S','SW','W','NW'][Math.roun
 function staticArrow(b)  { return['↑','↗','→','↘','↓','↙','←','↖'][Math.round(b/45)%8]; }
 
 // ── Route sanity check ────────────────────────────────────────────────────────
-// If a plane is over Scotland but the route says Munich→Berlin, something's wrong.
-// We check: is the plane's position within a reasonable corridor of the route?
-// Strategy: the plane should be within 500km of at least one of the airports,
-// AND both airports shouldn't be on the same side of the world away from the plane.
+// Simple, reliable check: the plane's position should sit roughly between
+// the two airports — i.e. within the bounding box of the route plus a generous
+// padding. This catches truly absurd cases (Munich→Berlin over Scotland) without
+// incorrectly rejecting valid European routes (Edinburgh→Düsseldorf over Scotland).
 
 function routeMakesSense(route, planeLat, planeLon) {
   const oLat=parseFloat(route.originLat), oLon=parseFloat(route.originLon);
   const dLat=parseFloat(route.destLat),   dLon=parseFloat(route.destLon);
 
-  // If we don't have coords for both ends, give benefit of the doubt
+  // No coords available — give benefit of the doubt
   if(isNaN(oLat)||isNaN(oLon)||isNaN(dLat)||isNaN(dLon)) return true;
 
-  const dFromOrigin = distKm(planeLat, planeLon, oLat, oLon);
-  const dFromDest   = distKm(planeLat, planeLon, dLat, dLon);
-
-  // The total route distance
+  // How long is the route?
   const routeLen = distKm(oLat, oLon, dLat, dLon);
 
-  // Plane should be within (routeLen + 400km) of both airports combined.
-  // i.e. the sum of distances from plane to each airport shouldn't be more
-  // than ~1.5x the direct route distance. This catches "totally wrong continent" cases.
-  const planePathLen = dFromOrigin + dFromDest;
+  // Padding grows with route length — short routes get 200km, long haul get 600km
+  const padding = Math.min(200 + routeLen * 0.4, 600);
 
-  // Also: plane must be within 600km of at least one endpoint
-  const nearAnEndpoint = dFromOrigin < 600 || dFromDest < 600;
+  // Build a padded bounding box around the route
+  const minLat = Math.min(oLat, dLat) - (padding / 111);
+  const maxLat = Math.max(oLat, dLat) + (padding / 111);
+  const lngScale = Math.cos(((oLat+dLat)/2) * Math.PI/180);
+  const minLon = Math.min(oLon, dLon) - (padding / (111 * lngScale));
+  const maxLon = Math.max(oLon, dLon) + (padding / (111 * lngScale));
 
-  // Sane if: plane is near the route corridor AND near at least one endpoint
-  return (planePathLen < routeLen * 1.8 + 400) && nearAnEndpoint;
+  return planeLat >= minLat && planeLat <= maxLat &&
+         planeLon >= minLon && planeLon <= maxLon;
 }
 
 // ── Classification ────────────────────────────────────────────────────────────
@@ -970,7 +1005,10 @@ function renderCards(flights) {
             <div class="airport-code">${to}</div>
             ${toCity?`<div class="airport-city" style="text-align:right">${toCity}</div>`:''}
           </div>
-        </div>`;
+        </div>
+        <a class="book-link" href="https://www.skyscanner.net/routes/${from}/${to}" target="_blank" rel="noopener" onclick="event.stopPropagation()">
+          🔍 Search ${from} → ${to} flights
+        </a>`;
 
     } else if(hasPartialRoute) {
       // Only departure known — e.g. helicopter
@@ -1041,7 +1079,14 @@ function renderCards(flights) {
 
   content.innerHTML=`
     <div class="section-label">aircraft overhead</div>
-    <div class="flights-list">${cards}</div>`;
+    <div class="flights-list">${cards}</div>
+    <div class="ad-unit">
+      <div class="ad-label">TRAVEL DEALS</div>
+      <div class="ad-content">
+        ✈ Search flights from your nearest airport
+        <a class="ad-link" href="https://www.skyscanner.net" target="_blank" rel="noopener">Compare on Skyscanner →</a>
+      </div>
+    </div>`;
 }
 
 function toggleDrill(id) {
