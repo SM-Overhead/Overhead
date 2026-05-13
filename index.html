@@ -6,6 +6,7 @@
   <title>Overhead</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Syne:wght@700;800&family=Inconsolata:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
     :root {
       --bg: #080c14;
@@ -464,6 +465,24 @@
     .compass-label { font-size:10px; font-family:'Inconsolata',monospace; color:var(--muted); margin-bottom:3px; }
     .compass-value { font-size:14px; font-family:'Inconsolata',monospace; color:var(--text); }
     .compass-sub { font-size:9px; color:var(--muted); margin-top:3px; font-style:italic; }
+
+    /* ── DRILL MAP ───────────────────────────────────────────────────────── */
+
+    .drill-map {
+      height:180px; border-radius:10px; overflow:hidden;
+      border:1px solid var(--border); margin-top:14px;
+      position:relative;
+    }
+
+    .drill-map .leaflet-container {
+      background:#0d1220 !important;
+      height:180px;
+    }
+
+    /* Dark tile filter */
+    .drill-map .leaflet-tile {
+      filter: brightness(0.7) saturate(0.6) hue-rotate(180deg) invert(1);
+    }
 
     /* States */
     .state-box { text-align:center; padding:48px 24px; color:var(--muted); }
@@ -1284,6 +1303,7 @@ function renderCards(flights) {
               <div class="compass-sub">${compassHeading!=null?'Arrow updates with your phone orientation':'Hold phone flat · arrow points at aircraft'}</div>
             </div>
           </div>
+          <div class="drill-map" id="map-${i}"></div>
         </div>
       </div>`;
   }).join('');
