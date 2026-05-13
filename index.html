@@ -537,6 +537,154 @@
       white-space:nowrap;
     }
     .ad-link:hover { color:var(--accent); }
+
+    /* ── NAV TABS ────────────────────────────────────────────────────────── */
+
+    .nav-tabs {
+      display:flex; gap:8px; margin-bottom:20px;
+    }
+
+    .nav-tab {
+      flex:1; padding:10px; border:1px solid var(--border);
+      background:var(--surface); border-radius:12px;
+      font-size:13px; font-weight:500; color:var(--muted);
+      cursor:pointer; transition:all 0.2s; text-align:center;
+      font-family:'Space Grotesk',sans-serif;
+    }
+
+    .nav-tab.active {
+      background:var(--subtle); border-color:var(--accent);
+      color:var(--text);
+    }
+
+    /* ── ALERT BANNER ────────────────────────────────────────────────────── */
+
+    .alert-banner {
+      display:none; position:fixed; top:16px; left:50%;
+      transform:translateX(-50%); z-index:999;
+      width:calc(100% - 32px); max-width:400px;
+      background:linear-gradient(135deg,#052e16,#064e3b);
+      border:1px solid var(--green);
+      border-radius:16px; padding:14px 16px;
+      animation:bannerIn 0.4s cubic-bezier(0.16,1,0.3,1);
+      box-shadow:0 8px 32px rgba(16,185,129,0.3);
+    }
+
+    @keyframes bannerIn {
+      from{opacity:0;transform:translateX(-50%) translateY(-20px)}
+      to{opacity:1;transform:translateX(-50%) translateY(0)}
+    }
+
+    .alert-banner-title {
+      font-size:13px; font-weight:600; color:var(--green);
+      margin-bottom:4px; display:flex; align-items:center; gap:8px;
+    }
+
+    .alert-banner-body { font-size:12px; color:#6ee7b7; line-height:1.5; }
+
+    .alert-banner-close {
+      position:absolute; top:10px; right:12px;
+      font-size:16px; color:var(--green); cursor:pointer;
+      background:none; border:none; line-height:1;
+    }
+
+    /* ── WATCHLIST PANEL ─────────────────────────────────────────────────── */
+
+    .watchlist-empty {
+      text-align:center; padding:40px 16px; color:var(--muted);
+    }
+
+    .watchlist-empty-icon { font-size:40px; margin-bottom:12px; display:block; opacity:0.5; }
+    .watchlist-empty-title { font-family:'Syne',sans-serif; font-size:18px; color:var(--text); margin-bottom:6px; }
+    .watchlist-empty-sub { font-size:12px; line-height:1.7; }
+
+    /* Add alert form */
+    .add-alert-form {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:16px; padding:16px; margin-bottom:16px;
+    }
+
+    .form-title {
+      font-size:12px; font-family:'Inconsolata',monospace;
+      letter-spacing:1px; color:var(--muted); text-transform:uppercase;
+      margin-bottom:12px;
+    }
+
+    .form-row { margin-bottom:12px; }
+
+    .form-label {
+      font-size:11px; color:var(--muted); margin-bottom:6px;
+      display:block; font-family:'Inconsolata',monospace;
+    }
+
+    .form-select, .form-input {
+      width:100%; background:var(--surface2);
+      border:1px solid var(--border); border-radius:10px;
+      padding:10px 12px; font-size:14px; color:var(--text);
+      font-family:'Space Grotesk',sans-serif;
+      appearance:none; -webkit-appearance:none;
+      outline:none; transition:border-color 0.2s;
+    }
+
+    .form-select:focus, .form-input:focus { border-color:var(--accent); }
+
+    .form-input::placeholder { color:var(--muted); }
+
+    .add-btn {
+      width:100%; background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff; border:none; border-radius:12px;
+      padding:13px; font-size:14px; font-weight:500;
+      font-family:'Space Grotesk',sans-serif;
+      cursor:pointer; transition:opacity 0.2s;
+      margin-top:4px;
+    }
+
+    .add-btn:active { opacity:0.85; }
+
+    /* Alert items */
+    .alert-list { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+
+    .alert-item {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:14px; padding:14px 16px;
+      display:flex; align-items:center; gap:12px;
+      animation:slideUp 0.3s ease both;
+    }
+
+    .alert-item.matched {
+      border-color:rgba(16,185,129,0.4);
+      background:linear-gradient(135deg,rgba(16,185,129,0.05),transparent);
+    }
+
+    .alert-icon { font-size:22px; flex-shrink:0; }
+
+    .alert-info { flex:1; min-width:0; }
+
+    .alert-type {
+      font-size:9px; font-family:'Inconsolata',monospace;
+      color:var(--muted); text-transform:uppercase;
+      letter-spacing:1px; margin-bottom:3px;
+    }
+
+    .alert-value { font-size:15px; font-weight:600; color:var(--text); }
+
+    .alert-status {
+      font-size:10px; font-family:'Inconsolata',monospace;
+      margin-top:3px;
+    }
+
+    .alert-status.on { color:var(--green); }
+    .alert-status.off { color:var(--muted); }
+
+    .alert-delete {
+      background:none; border:1px solid var(--border);
+      border-radius:8px; padding:6px 10px;
+      font-size:12px; color:var(--muted);
+      cursor:pointer; flex-shrink:0;
+      transition:all 0.2s;
+    }
+
+    .alert-delete:hover { border-color:#ef4444; color:#ef4444; }
   </style>
 </head>
 <body>
@@ -583,13 +731,53 @@
       </div>
     </div>
     <div class="location-info" id="locationInfo"></div>
-    <button class="scan-btn" id="scanBtn" onclick="fetchFlights()"><span>🔄</span> Refresh Now</button>
+
+    <!-- Nav tabs -->
+    <div class="nav-tabs">
+      <div class="nav-tab active" id="tabSky" onclick="switchTab('sky')">✈ Sky</div>
+      <div class="nav-tab" id="tabWatch" onclick="switchTab('watch')">🔔 Watchlist</div>
+    </div>
+
+    <button class="scan-btn" id="scanBtn" onclick="fetchFlights()" style="display:none"><span>🔄</span> Refresh Now</button>
   </div>
 
-  <div id="mainContent"></div>
-  <div class="refresh-bar" id="refreshBar" style="display:none">
-    <span id="refreshLabel">refreshing in 15s</span>
-    <div class="refresh-progress"><div class="refresh-fill" id="refreshFill" style="width:100%"></div></div>
+  <!-- Alert banner (fixed, overlays everything) -->
+  <div class="alert-banner" id="alertBanner">
+    <button class="alert-banner-close" onclick="dismissAlert()">✕</button>
+    <div class="alert-banner-title">🔔 <span id="alertBannerTitle">Alert matched!</span></div>
+    <div class="alert-banner-body" id="alertBannerBody"></div>
+  </div>
+
+  <!-- Sky tab content -->
+  <div id="skyTab">
+    <div id="mainContent"></div>
+    <div class="refresh-bar" id="refreshBar" style="display:none">
+      <span id="refreshLabel">refreshing in 15s</span>
+      <div class="refresh-progress"><div class="refresh-fill" id="refreshFill" style="width:100%"></div></div>
+    </div>
+  </div>
+
+  <!-- Watchlist tab content -->
+  <div id="watchTab" style="display:none">
+    <div class="add-alert-form">
+      <div class="form-title">🔔 Add New Alert</div>
+      <div class="form-row">
+        <label class="form-label">Alert me when...</label>
+        <select class="form-select" id="alertType" onchange="updateAlertPlaceholder()">
+          <option value="airline">A specific airline flies over</option>
+          <option value="destination">A flight heading to a city flies over</option>
+          <option value="origin">A flight departing from a city flies over</option>
+          <option value="callsign">A specific flight number flies over</option>
+          <option value="aircraft">A specific aircraft type flies over</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label class="form-label" id="alertValueLabel">Airline name</label>
+        <input class="form-input" id="alertValue" type="text" placeholder="e.g. British Airways" />
+      </div>
+      <button class="add-btn" onclick="addAlert()">+ Add Alert</button>
+    </div>
+    <div id="alertList"></div>
   </div>
 
 </div>
@@ -782,6 +970,7 @@ function startTracking() {
       userLat=pos.coords.latitude; userLon=pos.coords.longitude;
       document.getElementById('heroScreen').style.display='none';
       document.getElementById('postScan').style.display='block';
+      document.getElementById('scanBtn').style.display='block';
       document.getElementById('locationInfo').textContent=
         `${userLat.toFixed(4)}°N  ${Math.abs(userLon).toFixed(4)}°${userLon<0?'W':'E'}`;
       initCompass(); fetchFlights();
@@ -884,6 +1073,7 @@ async function fetchFlights() {
 
     setLive(true,'live · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
     renderCards(enriched);
+    checkAlerts(enriched);
     startCountdown();
   } catch(e) {
     showError(`Could not fetch: ${e.message}`);
@@ -1060,6 +1250,199 @@ function toggleDrill(id) {
   const isOpen=el.style.display==='block';
   document.querySelectorAll('.drill-panel').forEach(p=>{p.style.display='none';});
   if(!isOpen) el.style.display='block';
+}
+
+// ── Tab switching ─────────────────────────────────────────────────────────────
+
+function switchTab(tab) {
+  const isSky = tab === 'sky';
+  document.getElementById('skyTab').style.display   = isSky ? 'block' : 'none';
+  document.getElementById('watchTab').style.display = isSky ? 'none'  : 'block';
+  document.getElementById('scanBtn').style.display  = isSky ? 'block' : 'none';
+  document.getElementById('tabSky').className   = 'nav-tab' + (isSky  ? ' active' : '');
+  document.getElementById('tabWatch').className = 'nav-tab' + (!isSky ? ' active' : '');
+  if(!isSky) renderAlertList();
+}
+
+// ── Alert form ────────────────────────────────────────────────────────────────
+
+const ALERT_META = {
+  airline:     { label:'Airline name',       placeholder:'e.g. British Airways',  icon:'✈️' },
+  destination: { label:'Destination city',   placeholder:'e.g. Dubai or DXB',     icon:'🛬' },
+  origin:      { label:'Departure city',     placeholder:'e.g. Edinburgh or EDI', icon:'🛫' },
+  callsign:    { label:'Flight number',      placeholder:'e.g. BAW123',           icon:'🔢' },
+  aircraft:    { label:'Aircraft type',      placeholder:'e.g. A380 or Boeing',   icon:'🛩️' },
+};
+
+function updateAlertPlaceholder() {
+  const type = document.getElementById('alertType').value;
+  const meta = ALERT_META[type];
+  document.getElementById('alertValueLabel').textContent = meta.label;
+  document.getElementById('alertValue').placeholder = meta.placeholder;
+  document.getElementById('alertValue').value = '';
+}
+
+// ── Watchlist storage ─────────────────────────────────────────────────────────
+
+function loadAlerts() {
+  try { return JSON.parse(localStorage.getItem('overhead_alerts')||'[]'); }
+  catch { return []; }
+}
+
+function saveAlerts(alerts) {
+  localStorage.setItem('overhead_alerts', JSON.stringify(alerts));
+}
+
+function addAlert() {
+  const type  = document.getElementById('alertType').value;
+  const value = document.getElementById('alertValue').value.trim();
+  if(!value) { document.getElementById('alertValue').focus(); return; }
+
+  const alerts = loadAlerts();
+  alerts.push({
+    id: Date.now(),
+    type,
+    value,
+    icon: ALERT_META[type].icon,
+    lastMatched: null,
+    matchCount: 0,
+  });
+  saveAlerts(alerts);
+  document.getElementById('alertValue').value = '';
+  renderAlertList();
+
+  // Request browser notification permission
+  if('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+function deleteAlert(id) {
+  saveAlerts(loadAlerts().filter(a => a.id !== id));
+  renderAlertList();
+}
+
+function renderAlertList() {
+  const alerts = loadAlerts();
+  const container = document.getElementById('alertList');
+
+  if(!alerts.length) {
+    container.innerHTML = `
+      <div class="watchlist-empty">
+        <span class="watchlist-empty-icon">🔔</span>
+        <div class="watchlist-empty-title">No alerts yet</div>
+        <div class="watchlist-empty-sub">Add an alert above and we'll notify you<br>whenever a matching flight passes overhead</div>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = `<div class="alert-list">${alerts.map(a => {
+    const isMatched = a.lastMatched && (Date.now() - a.lastMatched < 120000); // matched in last 2 mins
+    const typeLabel = ALERT_META[a.type]?.label || a.type;
+    const statusText = isMatched
+      ? `🟢 Overhead right now!`
+      : a.matchCount > 0
+        ? `Last matched ${formatTimeAgo(a.lastMatched)}`
+        : 'Watching · no matches yet';
+
+    return `
+      <div class="alert-item ${isMatched?'matched':''}">
+        <div class="alert-icon">${a.icon}</div>
+        <div class="alert-info">
+          <div class="alert-type">${typeLabel}</div>
+          <div class="alert-value">${a.value}</div>
+          <div class="alert-status ${isMatched?'on':'off'}">${statusText}</div>
+        </div>
+        <button class="alert-delete" onclick="deleteAlert(${a.id})">✕</button>
+      </div>`;
+  }).join('')}</div>`;
+}
+
+function formatTimeAgo(ts) {
+  if(!ts) return 'never';
+  const mins = Math.round((Date.now()-ts)/60000);
+  if(mins < 1)  return 'just now';
+  if(mins < 60) return `${mins}m ago`;
+  return `${Math.floor(mins/60)}h ago`;
+}
+
+// ── Alert matching ────────────────────────────────────────────────────────────
+// Called after each fetchFlights() with the enriched flight array
+
+function checkAlerts(flights) {
+  const alerts = loadAlerts();
+  if(!alerts.length) return;
+
+  let anyMatched = false;
+  let matchedAlert = null;
+  let matchedFlight = null;
+
+  alerts.forEach(alert => {
+    const v = alert.value.toLowerCase();
+
+    flights.forEach(f => {
+      const airline   = (f.route?.airline || guessAirline(f.callsign) || '').toLowerCase();
+      const to        = (f.route?.to || '').toLowerCase();
+      const toCity    = (f.route?.toCity || cityFor(f.route?.to) || '').toLowerCase();
+      const from      = (f.route?.from || '').toLowerCase();
+      const fromCity  = (f.route?.fromCity || cityFor(f.route?.from) || '').toLowerCase();
+      const callsign  = (f.callsign || '').toLowerCase();
+      const acType    = (f.acInfo?.type || f.acInfo?.icaoType || f.t || '').toLowerCase();
+
+      let matched = false;
+
+      if(alert.type === 'airline')      matched = airline.includes(v);
+      if(alert.type === 'destination')  matched = to.includes(v) || toCity.includes(v);
+      if(alert.type === 'origin')       matched = from.includes(v) || fromCity.includes(v);
+      if(alert.type === 'callsign')     matched = callsign.includes(v);
+      if(alert.type === 'aircraft')     matched = acType.includes(v);
+
+      if(matched) {
+        alert.lastMatched = Date.now();
+        alert.matchCount = (alert.matchCount||0) + 1;
+        anyMatched = true;
+        if(!matchedAlert) { matchedAlert = alert; matchedFlight = f; }
+      }
+    });
+  });
+
+  saveAlerts(alerts);
+
+  if(anyMatched && matchedFlight) {
+    fireAlert(matchedAlert, matchedFlight);
+  }
+
+  // Re-render list if on watchlist tab
+  if(document.getElementById('watchTab').style.display !== 'none') {
+    renderAlertList();
+  }
+}
+
+function fireAlert(alert, flight) {
+  const airline = flight.route?.airline || guessAirline(flight.callsign) || 'Unknown';
+  const from    = flight.route?.from || '?';
+  const to      = flight.route?.to   || '?';
+  const dist    = flight.dist?.toFixed(1) || '?';
+  const route   = (from !== '?' && to !== '?') ? `${from} → ${to}` : 'Route unknown';
+
+  const title = `${alert.icon} ${alert.value} is overhead!`;
+  const body  = `${airline} · ${flight.callsign} · ${route} · ${dist}km away`;
+
+  // In-app banner
+  document.getElementById('alertBannerTitle').textContent = title;
+  document.getElementById('alertBannerBody').textContent  = body;
+  const banner = document.getElementById('alertBanner');
+  banner.style.display = 'block';
+  setTimeout(() => { banner.style.display='none'; }, 8000);
+
+  // Browser notification (if permitted and tab not focused)
+  if('Notification' in window && Notification.permission === 'granted' && document.hidden) {
+    new Notification('Overhead · ' + title, { body, icon:'/favicon.ico' });
+  }
+}
+
+function dismissAlert() {
+  document.getElementById('alertBanner').style.display = 'none';
 }
 
 </script>
