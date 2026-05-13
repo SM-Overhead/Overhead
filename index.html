@@ -685,6 +685,53 @@
     }
 
     .alert-delete:hover { border-color:#ef4444; color:#ef4444; }
+
+    /* ── TYPEAHEAD ───────────────────────────────────────────────────────── */
+
+    .typeahead-wrap { position:relative; }
+
+    .typeahead-dropdown {
+      position:absolute; top:calc(100% + 4px); left:0; right:0;
+      background:var(--surface2); border:1px solid var(--accent);
+      border-radius:12px; overflow:hidden;
+      z-index:200; max-height:220px; overflow-y:auto;
+      box-shadow:0 8px 24px rgba(0,0,0,0.4);
+      display:none;
+    }
+
+    .typeahead-dropdown.open { display:block; }
+
+    .typeahead-item {
+      padding:11px 14px; cursor:pointer;
+      display:flex; align-items:center; gap:10px;
+      transition:background 0.15s; border-bottom:1px solid var(--border);
+    }
+
+    .typeahead-item:last-child { border-bottom:none; }
+    .typeahead-item:hover, .typeahead-item.focused { background:var(--subtle); }
+
+    .typeahead-item-icon { font-size:16px; flex-shrink:0; }
+
+    .typeahead-item-text { flex:1; min-width:0; }
+
+    .typeahead-item-name {
+      font-size:14px; color:var(--text); font-weight:500;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+
+    .typeahead-item-name em {
+      color:var(--accent2); font-style:normal; font-weight:700;
+    }
+
+    .typeahead-item-tag {
+      font-size:9px; font-family:'Inconsolata',monospace;
+      color:var(--muted); letter-spacing:0.5px; margin-top:1px;
+    }
+
+    .typeahead-no-results {
+      padding:12px 14px; font-size:13px; color:var(--muted);
+      font-style:italic;
+    }
   </style>
 </head>
 <body>
@@ -773,7 +820,16 @@
       </div>
       <div class="form-row">
         <label class="form-label" id="alertValueLabel">Airline name</label>
-        <input class="form-input" id="alertValue" type="text" placeholder="e.g. British Airways" />
+        <div class="typeahead-wrap">
+          <input class="form-input" id="alertValue" type="text"
+            placeholder="e.g. British Airways"
+            autocomplete="off"
+            oninput="typeaheadInput()"
+            onkeydown="typeaheadKey(event)"
+            onfocus="typeaheadInput()"
+            onblur="setTimeout(closeTypeahead,150)" />
+          <div class="typeahead-dropdown" id="typeaheadDropdown"></div>
+        </div>
       </div>
       <button class="add-btn" onclick="addAlert()">+ Add Alert</button>
     </div>
@@ -1266,12 +1322,213 @@ function switchTab(tab) {
 
 // ── Alert form ────────────────────────────────────────────────────────────────
 
+// Comprehensive suggestions per alert type
+const SUGGESTIONS = {
+  airline: [
+    // ── UK & Ireland ──────────────────────────────────────────────────────
+    {name:'British Airways',       tag:'UK · ICAO: BAW', icon:'✈️'},
+    {name:'easyJet',               tag:'UK · ICAO: EZY', icon:'✈️'},
+    {name:'Ryanair',               tag:'Ireland · ICAO: RYR', icon:'✈️'},
+    {name:'Jet2',                  tag:'UK · ICAO: EXS', icon:'✈️'},
+    {name:'TUI Airways',           tag:'UK · ICAO: TOM', icon:'✈️'},
+    {name:'Virgin Atlantic',       tag:'UK · ICAO: VIR', icon:'✈️'},
+    {name:'Aer Lingus',            tag:'Ireland · ICAO: EIN', icon:'✈️'},
+    {name:'Loganair',              tag:'UK · ICAO: LOG', icon:'✈️'},
+    {name:'BMI Regional',          tag:'UK · ICAO: BMI', icon:'✈️'},
+    {name:'Flybe',                 tag:'UK · ICAO: BEE', icon:'✈️'},
+    {name:'Titan Airways',         tag:'UK · ICAO: TAY', icon:'✈️'},
+    {name:'Eastern Airways',       tag:'UK · ICAO: EZE', icon:'✈️'},
+    {name:'Aurigny',               tag:'UK · ICAO: AUR', icon:'✈️'},
+    {name:'Blue Islands',          tag:'UK · ICAO: BCI', icon:'✈️'},
+    {name:'Caledonian MacBrayne',  tag:'UK · Ferry/Air', icon:'✈️'},
+    // ── Europe ───────────────────────────────────────────────────────────
+    {name:'Lufthansa',             tag:'Germany · ICAO: DLH', icon:'✈️'},
+    {name:'Air France',            tag:'France · ICAO: AFR', icon:'✈️'},
+    {name:'KLM',                   tag:'Netherlands · ICAO: KLM', icon:'✈️'},
+    {name:'Iberia',                tag:'Spain · ICAO: IBE', icon:'✈️'},
+    {name:'Vueling',               tag:'Spain · ICAO: VLG', icon:'✈️'},
+    {name:'Iberia Express',        tag:'Spain · ICAO: IBX', icon:'✈️'},
+    {name:'Swiss',                 tag:'Switzerland · ICAO: SWR', icon:'✈️'},
+    {name:'Austrian Airlines',     tag:'Austria · ICAO: AUA', icon:'✈️'},
+    {name:'Brussels Airlines',     tag:'Belgium · ICAO: BEL', icon:'✈️'},
+    {name:'SAS',                   tag:'Scandinavia · ICAO: SAS', icon:'✈️'},
+    {name:'Norwegian',             tag:'Norway · ICAO: NAX', icon:'✈️'},
+    {name:'Finnair',               tag:'Finland · ICAO: FIN', icon:'✈️'},
+    {name:'Wizz Air',              tag:'Hungary · ICAO: WZZ', icon:'✈️'},
+    {name:'Transavia',             tag:'Netherlands · ICAO: TRA', icon:'✈️'},
+    {name:'Eurowings',             tag:'Germany · ICAO: EWG', icon:'✈️'},
+    {name:'Condor',                tag:'Germany · ICAO: CFG', icon:'✈️'},
+    {name:'TAP Air Portugal',      tag:'Portugal · ICAO: TAP', icon:'✈️'},
+    {name:'Aegean Airlines',       tag:'Greece · ICAO: AEE', icon:'✈️'},
+    {name:'Olympic Air',           tag:'Greece · ICAO: OAL', icon:'✈️'},
+    {name:'LOT Polish Airlines',   tag:'Poland · ICAO: LOT', icon:'✈️'},
+    {name:'Czech Airlines',        tag:'Czech Republic · ICAO: CSA', icon:'✈️'},
+    {name:'Aeroflot',              tag:'Russia · ICAO: SUA', icon:'✈️'},
+    {name:'S7 Airlines',           tag:'Russia · ICAO: SBI', icon:'✈️'},
+    {name:'Ural Airlines',         tag:'Russia · ICAO: SVR', icon:'✈️'},
+    {name:'Air Baltic',            tag:'Latvia · ICAO: BTI', icon:'✈️'},
+    {name:'Estonian Air',          tag:'Estonia · ICAO: ELL', icon:'✈️'},
+    {name:'Croatia Airlines',      tag:'Croatia · ICAO: CTN', icon:'✈️'},
+    {name:'Adria Airways',         tag:'Slovenia · ICAO: ADR', icon:'✈️'},
+    {name:'Air Serbia',            tag:'Serbia · ICAO: ASL', icon:'✈️'},
+    {name:'TAROM',                 tag:'Romania · ICAO: ROT', icon:'✈️'},
+    {name:'Alitalia / ITA Airways',tag:'Italy · ICAO: AZA', icon:'✈️'},
+    {name:'Air Malta',             tag:'Malta · ICAO: AMC', icon:'✈️'},
+    {name:'SunExpress',            tag:'Turkey · ICAO: SXS', icon:'✈️'},
+    {name:'Turkish Airlines',      tag:'Turkey · ICAO: THY', icon:'✈️'},
+    {name:'Pegasus Airlines',      tag:'Turkey · ICAO: PCF', icon:'✈️'},
+    {name:'Enter Air',             tag:'Poland · ICAO: ENT', icon:'✈️'},
+    {name:'Wideroe',               tag:'Norway · ICAO: WIF', icon:'✈️'},
+    {name:'Icelandair',            tag:'Iceland · ICAO: ICE', icon:'✈️'},
+    // ── Middle East ───────────────────────────────────────────────────────
+    {name:'Emirates',              tag:'UAE · ICAO: UAE', icon:'✈️'},
+    {name:'Etihad',                tag:'UAE · ICAO: ETD', icon:'✈️'},
+    {name:'Qatar Airways',         tag:'Qatar · ICAO: QTR', icon:'✈️'},
+    {name:'flydubai',              tag:'UAE · ICAO: FDB', icon:'✈️'},
+    {name:'Air Arabia',            tag:'UAE · ICAO: ABY', icon:'✈️'},
+    {name:'Gulf Air',              tag:'Bahrain · ICAO: GFA', icon:'✈️'},
+    {name:'Kuwait Airways',        tag:'Kuwait · ICAO: KAC', icon:'✈️'},
+    {name:'Oman Air',              tag:'Oman · ICAO: OMA', icon:'✈️'},
+    {name:'Saudia',                tag:'Saudi Arabia · ICAO: SVA', icon:'✈️'},
+    {name:'flynas',                tag:'Saudi Arabia · ICAO: NAS', icon:'✈️'},
+    {name:'Royal Jordanian',       tag:'Jordan · ICAO: RJA', icon:'✈️'},
+    {name:'Middle East Airlines',  tag:'Lebanon · ICAO: MEA', icon:'✈️'},
+    {name:'Israel Airlines (El Al)',tag:'Israel · ICAO: ELY', icon:'✈️'},
+    {name:'Arkia',                 tag:'Israel · ICAO: AIZ', icon:'✈️'},
+    // ── Africa ───────────────────────────────────────────────────────────
+    {name:'EgyptAir',              tag:'Egypt · ICAO: MSR', icon:'✈️'},
+    {name:'Royal Air Maroc',       tag:'Morocco · ICAO: RAM', icon:'✈️'},
+    {name:'Tunisair',              tag:'Tunisia · ICAO: TAR', icon:'✈️'},
+    {name:'Ethiopian Airlines',    tag:'Ethiopia · ICAO: ETH', icon:'✈️'},
+    {name:'Kenya Airways',         tag:'Kenya · ICAO: KQA', icon:'✈️'},
+    {name:'South African Airways', tag:'South Africa · ICAO: SAA', icon:'✈️'},
+    {name:'Fastjet',               tag:'Africa · ICAO: FTZ', icon:'✈️'},
+    {name:'RwandAir',              tag:'Rwanda · ICAO: RWD', icon:'✈️'},
+    // ── Asia Pacific ─────────────────────────────────────────────────────
+    {name:'Singapore Airlines',    tag:'Singapore · ICAO: SIA', icon:'✈️'},
+    {name:'Cathay Pacific',        tag:'Hong Kong · ICAO: CPA', icon:'✈️'},
+    {name:'ANA',                   tag:'Japan · ICAO: ANA', icon:'✈️'},
+    {name:'Japan Airlines',        tag:'Japan · ICAO: JAL', icon:'✈️'},
+    {name:'Korean Air',            tag:'South Korea · ICAO: KAL', icon:'✈️'},
+    {name:'Asiana Airlines',       tag:'South Korea · ICAO: AAR', icon:'✈️'},
+    {name:'Air China',             tag:'China · ICAO: CCA', icon:'✈️'},
+    {name:'China Southern',        tag:'China · ICAO: CSN', icon:'✈️'},
+    {name:'China Eastern',         tag:'China · ICAO: CES', icon:'✈️'},
+    {name:'Hainan Airlines',       tag:'China · ICAO: CHH', icon:'✈️'},
+    {name:'Malaysia Airlines',     tag:'Malaysia · ICAO: MAS', icon:'✈️'},
+    {name:'AirAsia',               tag:'Malaysia · ICAO: AXM', icon:'✈️'},
+    {name:'Thai Airways',          tag:'Thailand · ICAO: THA', icon:'✈️'},
+    {name:'Bangkok Airways',       tag:'Thailand · ICAO: BKP', icon:'✈️'},
+    {name:'Vietnam Airlines',      tag:'Vietnam · ICAO: HVN', icon:'✈️'},
+    {name:'Philippine Airlines',   tag:'Philippines · ICAO: PAL', icon:'✈️'},
+    {name:'Qantas',                tag:'Australia · ICAO: QFA', icon:'✈️'},
+    {name:'Jetstar',               tag:'Australia · ICAO: JST', icon:'✈️'},
+    {name:'Virgin Australia',      tag:'Australia · ICAO: VOZ', icon:'✈️'},
+    {name:'Air New Zealand',       tag:'New Zealand · ICAO: ANZ', icon:'✈️'},
+    {name:'IndiGo',                tag:'India · ICAO: IGO', icon:'✈️'},
+    {name:'Air India',             tag:'India · ICAO: AIC', icon:'✈️'},
+    {name:'SpiceJet',              tag:'India · ICAO: SEJ', icon:'✈️'},
+    // ── Americas ─────────────────────────────────────────────────────────
+    {name:'American Airlines',     tag:'USA · ICAO: AAL', icon:'✈️'},
+    {name:'United Airlines',       tag:'USA · ICAO: UAL', icon:'✈️'},
+    {name:'Delta Air Lines',       tag:'USA · ICAO: DAL', icon:'✈️'},
+    {name:'Southwest Airlines',    tag:'USA · ICAO: SWA', icon:'✈️'},
+    {name:'JetBlue',               tag:'USA · ICAO: JBU', icon:'✈️'},
+    {name:'Alaska Airlines',       tag:'USA · ICAO: ASA', icon:'✈️'},
+    {name:'Spirit Airlines',       tag:'USA · ICAO: NKS', icon:'✈️'},
+    {name:'Frontier Airlines',     tag:'USA · ICAO: FFT', icon:'✈️'},
+    {name:'Air Canada',            tag:'Canada · ICAO: ACA', icon:'✈️'},
+    {name:'WestJet',               tag:'Canada · ICAO: WJA', icon:'✈️'},
+    {name:'LATAM Airlines',        tag:'Latin America · ICAO: LAN', icon:'✈️'},
+    {name:'Avianca',               tag:'Colombia · ICAO: AVA', icon:'✈️'},
+    {name:'Aeromexico',            tag:'Mexico · ICAO: AMX', icon:'✈️'},
+    {name:'Copa Airlines',         tag:'Panama · ICAO: CMP', icon:'✈️'},
+    // ── Cargo ─────────────────────────────────────────────────────────────
+    {name:'FedEx',                 tag:'Cargo · ICAO: FDX', icon:'📦'},
+    {name:'UPS Airlines',          tag:'Cargo · ICAO: UPS', icon:'📦'},
+    {name:'DHL Air',               tag:'Cargo · ICAO: DHL', icon:'📦'},
+    {name:'TNT Airways',           tag:'Cargo · ICAO: TAY', icon:'📦'},
+    {name:'Atlas Air',             tag:'Cargo · ICAO: GTI', icon:'📦'},
+    {name:'Cargolux',              tag:'Cargo · ICAO: CLX', icon:'📦'},
+    {name:'Lufthansa Cargo',       tag:'Cargo · ICAO: GEC', icon:'📦'},
+    {name:'Air France Cargo',      tag:'Cargo · ICAO: AFR', icon:'📦'},
+    {name:'Korean Air Cargo',      tag:'Cargo · ICAO: KAL', icon:'📦'},
+    {name:'Emirates SkyCargo',     tag:'Cargo · ICAO: UAE', icon:'📦'},
+    {name:'West Atlantic',         tag:'Cargo · ICAO: NPT', icon:'📦'},
+    // ── Military ──────────────────────────────────────────────────────────
+    {name:'RAF (Royal Air Force)',      tag:'UK Military · prefix: RRR/RFR', icon:'🎖️'},
+    {name:'USAF (US Air Force)',        tag:'US Military · prefix: RCH/SAM', icon:'🎖️'},
+    {name:'US Navy',                    tag:'US Military · prefix: NAVY', icon:'🎖️'},
+    {name:'US Army Aviation',          tag:'US Military · prefix: ARMY', icon:'🎖️'},
+    {name:'French Air Force',          tag:'France Military · prefix: FAF', icon:'🎖️'},
+    {name:'German Air Force (GAF)',     tag:'Germany Military · prefix: GAF', icon:'🎖️'},
+    {name:'NATO',                       tag:'NATO Operations · prefix: NATO', icon:'🎖️'},
+    {name:'Belgian Air Component',     tag:'Belgium Military · prefix: BAF', icon:'🎖️'},
+    {name:'Royal Canadian Air Force',  tag:'Canada Military · prefix: CFC', icon:'🎖️'},
+    {name:'Royal Australian Air Force',tag:'Australia Military · prefix: ASY', icon:'🎖️'},
+    {name:'Indian Air Force',          tag:'India Military', icon:'🎖️'},
+    // ── Generic / Class ───────────────────────────────────────────────────
+    {name:'Any helicopter',        tag:'Generic · rotary wing aircraft', icon:'🚁'},
+    {name:'Any private jet',       tag:'Generic · business aviation', icon:'✈️'},
+    {name:'Any light aircraft',    tag:'Generic · small private plane', icon:'🛩️'},
+    {name:'Any cargo flight',      tag:'Generic · freight operations', icon:'📦'},
+    {name:'Any military aircraft', tag:'Generic · all military traffic', icon:'🎖️'},
+    {name:'Any private aircraft',  tag:'Generic · non-commercial', icon:'🛩️'},
+  ],
+  destination: [],  // free text — no autocomplete needed, cities already in CITIES table
+  origin: [],
+  callsign: [],
+  aircraft: [
+    {name:'Airbus A380',      tag:'Superjumbo · 4 engines', icon:'🛩️'},
+    {name:'Airbus A350',      tag:'Long-haul widebody', icon:'🛩️'},
+    {name:'Airbus A330',      tag:'Long-haul widebody', icon:'🛩️'},
+    {name:'Airbus A321',      tag:'Narrowbody', icon:'🛩️'},
+    {name:'Airbus A320',      tag:'Narrowbody · very common', icon:'🛩️'},
+    {name:'Airbus A319',      tag:'Narrowbody · short-haul', icon:'🛩️'},
+    {name:'Airbus A318',      tag:'Narrowbody · small', icon:'🛩️'},
+    {name:'Boeing 747',       tag:'Jumbo jet · 4 engines', icon:'🛩️'},
+    {name:'Boeing 777',       tag:'Long-haul widebody', icon:'🛩️'},
+    {name:'Boeing 787 Dreamliner', tag:'Long-haul widebody', icon:'🛩️'},
+    {name:'Boeing 737',       tag:'Narrowbody · very common', icon:'🛩️'},
+    {name:'Boeing 737 MAX',   tag:'Narrowbody · new gen', icon:'🛩️'},
+    {name:'Boeing 757',       tag:'Narrowbody · medium-haul', icon:'🛩️'},
+    {name:'Boeing 767',       tag:'Widebody · medium-haul', icon:'🛩️'},
+    {name:'Embraer E190',     tag:'Regional jet', icon:'🛩️'},
+    {name:'Embraer E195',     tag:'Regional jet', icon:'🛩️'},
+    {name:'Embraer ERJ-145',  tag:'Regional jet · small', icon:'🛩️'},
+    {name:'Bombardier Q400',  tag:'Turboprop regional', icon:'🛩️'},
+    {name:'ATR 72',           tag:'Turboprop regional', icon:'🛩️'},
+    {name:'ATR 42',           tag:'Turboprop small', icon:'🛩️'},
+    {name:'Cessna 172',       tag:'Light aircraft · piston', icon:'🛩️'},
+    {name:'Cessna Citation',  tag:'Business jet · small', icon:'🛩️'},
+    {name:'Piper PA-28',      tag:'Light aircraft · piston', icon:'🛩️'},
+    {name:'Beechcraft King Air', tag:'Turboprop · executive', icon:'🛩️'},
+    {name:'Gulfstream G650',  tag:'Business jet · large', icon:'🛩️'},
+    {name:'Gulfstream G550',  tag:'Business jet · large', icon:'🛩️'},
+    {name:'Bombardier Global 7500', tag:'Business jet · ultra long range', icon:'🛩️'},
+    {name:'Dassault Falcon',  tag:'Business jet · French', icon:'🛩️'},
+    {name:'Airbus A220',      tag:'Narrowbody · new gen', icon:'🛩️'},
+    {name:'Leonardo AW139',   tag:'Helicopter · executive/SAR', icon:'🚁'},
+    {name:'Sikorsky S-92',    tag:'Helicopter · offshore/VIP', icon:'🚁'},
+    {name:'Airbus H145',      tag:'Helicopter · EMS/police', icon:'🚁'},
+    {name:'Robinson R44',     tag:'Helicopter · light piston', icon:'🚁'},
+    {name:'Bell 206',         tag:'Helicopter · light turbine', icon:'🚁'},
+    {name:'Eurofighter Typhoon', tag:'Military fighter', icon:'🎖️'},
+    {name:'F-16 Fighting Falcon', tag:'Military fighter · USAF', icon:'🎖️'},
+    {name:'F-35 Lightning II',   tag:'Military stealth fighter', icon:'🎖️'},
+    {name:'Lockheed C-130',  tag:'Military transport', icon:'🎖️'},
+    {name:'Boeing C-17',     tag:'Military transport · heavy', icon:'🎖️'},
+    {name:'BAE Hawk',        tag:'Military trainer · RAF', icon:'🎖️'},
+    {name:'Panavia Tornado', tag:'Military · RAF retired', icon:'🎖️'},
+  ],
+};
+
 const ALERT_META = {
-  airline:     { label:'Airline name',       placeholder:'e.g. British Airways',  icon:'✈️' },
-  destination: { label:'Destination city',   placeholder:'e.g. Dubai or DXB',     icon:'🛬' },
-  origin:      { label:'Departure city',     placeholder:'e.g. Edinburgh or EDI', icon:'🛫' },
-  callsign:    { label:'Flight number',      placeholder:'e.g. BAW123',           icon:'🔢' },
-  aircraft:    { label:'Aircraft type',      placeholder:'e.g. A380 or Boeing',   icon:'🛩️' },
+  airline:     { label:'Airline name',       placeholder:'Start typing an airline…', icon:'✈️' },
+  destination: { label:'Destination city or airport code', placeholder:'e.g. Dubai or DXB', icon:'🛬' },
+  origin:      { label:'Departure city or airport code',   placeholder:'e.g. Edinburgh or EDI', icon:'🛫' },
+  callsign:    { label:'Flight number',      placeholder:'e.g. BAW123 or EZY456', icon:'🔢' },
+  aircraft:    { label:'Aircraft type',      placeholder:'Start typing an aircraft…', icon:'🛩️' },
 };
 
 function updateAlertPlaceholder() {
@@ -1280,6 +1537,83 @@ function updateAlertPlaceholder() {
   document.getElementById('alertValueLabel').textContent = meta.label;
   document.getElementById('alertValue').placeholder = meta.placeholder;
   document.getElementById('alertValue').value = '';
+  closeTypeahead();
+}
+
+// ── Typeahead ─────────────────────────────────────────────────────────────────
+
+let typeaheadFocusIndex = -1;
+
+function typeaheadInput() {
+  const type  = document.getElementById('alertType').value;
+  const query = document.getElementById('alertValue').value.trim().toLowerCase();
+  const items = SUGGESTIONS[type] || [];
+
+  if(!items.length || query.length === 0) { closeTypeahead(); return; }
+
+  const matches = items.filter(s =>
+    s.name.toLowerCase().includes(query) || s.tag.toLowerCase().includes(query)
+  ).slice(0, 8);
+
+  const dd = document.getElementById('typeaheadDropdown');
+
+  if(!matches.length) {
+    dd.innerHTML = '<div class="typeahead-no-results">No matches — try a different spelling</div>';
+    dd.classList.add('open');
+    return;
+  }
+
+  typeaheadFocusIndex = -1;
+  dd.innerHTML = matches.map((s, i) => {
+    // Bold the matching part
+    const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+    const highlighted = s.name.replace(re, '<em>$1</em>');
+    return `
+      <div class="typeahead-item" data-value="${s.name}" onmousedown="pickSuggestion('${s.name.replace(/'/g,"\\'")}')">
+        <div class="typeahead-item-icon">${s.icon}</div>
+        <div class="typeahead-item-text">
+          <div class="typeahead-item-name">${highlighted}</div>
+          <div class="typeahead-item-tag">${s.tag}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  dd.classList.add('open');
+}
+
+function typeaheadKey(e) {
+  const dd = document.getElementById('typeaheadDropdown');
+  const items = dd.querySelectorAll('.typeahead-item');
+  if(!items.length) return;
+
+  if(e.key === 'ArrowDown') {
+    e.preventDefault();
+    typeaheadFocusIndex = Math.min(typeaheadFocusIndex + 1, items.length - 1);
+    items.forEach((el,i) => el.classList.toggle('focused', i === typeaheadFocusIndex));
+  } else if(e.key === 'ArrowUp') {
+    e.preventDefault();
+    typeaheadFocusIndex = Math.max(typeaheadFocusIndex - 1, 0);
+    items.forEach((el,i) => el.classList.toggle('focused', i === typeaheadFocusIndex));
+  } else if(e.key === 'Enter') {
+    e.preventDefault();
+    if(typeaheadFocusIndex >= 0 && items[typeaheadFocusIndex]) {
+      pickSuggestion(items[typeaheadFocusIndex].dataset.value);
+    } else {
+      addAlert();
+    }
+  } else if(e.key === 'Escape') {
+    closeTypeahead();
+  }
+}
+
+function pickSuggestion(value) {
+  document.getElementById('alertValue').value = value;
+  closeTypeahead();
+}
+
+function closeTypeahead() {
+  document.getElementById('typeaheadDropdown').classList.remove('open');
+  typeaheadFocusIndex = -1;
 }
 
 // ── Watchlist storage ─────────────────────────────────────────────────────────
@@ -1391,7 +1725,17 @@ function checkAlerts(flights) {
 
       let matched = false;
 
-      if(alert.type === 'airline')      matched = airline.includes(v);
+      if(alert.type === 'airline') {
+        // Handle generic class alerts
+        const v2 = alert.value.toLowerCase();
+        if(v2 === 'any helicopter')        matched = (f.gs||0)<150 && (f.alt_baro||0)<5000;
+        else if(v2 === 'any private jet')  matched = (f.gs||0)>=300 && (f.alt_baro||0)>20000 && !airline;
+        else if(v2 === 'any light aircraft') matched = (f.gs||0)<200 && (f.alt_baro||0)<10000 && !airline;
+        else if(v2 === 'any cargo flight') matched = CARGO_CALLSIGNS.some(p=>callsign.toUpperCase().startsWith(p));
+        else if(v2 === 'any military aircraft') matched = MILITARY_PREFIXES.some(p=>callsign.toUpperCase().startsWith(p));
+        else if(v2 === 'any private aircraft') matched = !airline && (f.gs||0)>50;
+        else matched = airline.includes(v);
+      }
       if(alert.type === 'destination')  matched = to.includes(v) || toCity.includes(v);
       if(alert.type === 'origin')       matched = from.includes(v) || fromCity.includes(v);
       if(alert.type === 'callsign')     matched = callsign.includes(v);
