@@ -241,6 +241,40 @@
     .typeahead-item-name em{color:var(--accent2);font-style:normal;font-weight:700}
     .typeahead-item-tag{font-size:9px;font-family:'Inconsolata',monospace;color:var(--muted);letter-spacing:0.5px;margin-top:1px}
     .typeahead-no-results{padding:12px 14px;font-size:13px;color:var(--muted);font-style:italic}
+
+    /* ── MANUAL LOCATION ── */
+    .manual-loc-label{font-size:11px;color:var(--muted);text-align:center;margin:16px 0 8px;font-family:'Inconsolata',monospace;letter-spacing:0.3px}
+
+    /* ── LOG ── */
+    .log-empty{text-align:center;padding:40px 16px;color:var(--muted)}
+    .log-empty-icon{font-size:40px;display:block;margin-bottom:12px;opacity:0.5}
+    .log-empty-title{font-family:'Syne',sans-serif;font-size:18px;color:var(--text);margin-bottom:6px}
+    .log-empty-sub{font-size:12px;line-height:1.7}
+    .log-day{margin-bottom:20px}
+    .log-day-label{font-size:9px;font-family:'Inconsolata',monospace;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+    .log-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+    .log-item:last-child{border-bottom:none}
+    .log-icon{font-size:20px;flex-shrink:0}
+    .log-info{flex:1;min-width:0}
+    .log-route{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .log-meta{font-size:10px;font-family:'Inconsolata',monospace;color:var(--muted);margin-top:2px}
+    .log-time{font-size:11px;font-family:'Inconsolata',monospace;color:var(--muted);flex-shrink:0}
+    .log-count{text-align:center;font-size:11px;font-family:'Inconsolata',monospace;color:var(--muted);padding:12px 0;border-top:1px solid var(--border);margin-top:4px}
+
+    /* ── SETTINGS ── */
+    .settings-section{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+    .settings-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+    .settings-desc{font-size:11px;color:var(--muted);font-family:'Inconsolata',monospace;margin-bottom:12px}
+    .settings-options{display:flex;gap:8px;flex-wrap:wrap}
+    .settings-chip{padding:8px 16px;border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--muted);cursor:pointer;transition:all 0.2s;background:var(--surface2)}
+    .settings-chip:hover{border-color:var(--accent);color:var(--text)}
+    .settings-chip.active{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:500}
+    .settings-btn-danger{padding:9px 16px;border:1px solid rgba(239,68,68,0.3);border-radius:10px;font-size:12px;color:#ef4444;cursor:pointer;background:rgba(239,68,68,0.05);font-family:'Space Grotesk',sans-serif;transition:all 0.2s}
+    .settings-btn-danger:hover{background:rgba(239,68,68,0.1);border-color:#ef4444}
+    .settings-about{margin-top:8px}
+    .about-logo{font-size:20px;font-family:'Syne',sans-serif;font-weight:800;color:var(--text);margin-bottom:4px}
+    .about-version{font-size:10px;font-family:'Inconsolata',monospace;color:var(--muted);margin-bottom:8px}
+    .about-desc{font-size:12px;color:var(--muted);line-height:1.7}
   </style>
 </head>
 <body>
@@ -269,6 +303,22 @@
     <div class="hero-tagline">Hear a plane? Tap below to identify<br>every aircraft flying above you.</div>
     <button class="hero-scan-btn" id="heroBtn" onclick="startTracking()"><span>📍</span> Scan the Sky Above Me</button>
     <div class="error-card" id="errorCard"></div>
+
+    <!-- Manual location fallback -->
+    <div id="manualLocWrap" style="display:none;width:100%;max-width:340px">
+      <div class="manual-loc-label">📌 Or search a location manually</div>
+      <div class="typeahead-wrap" style="width:100%">
+        <input class="form-input" id="manualLocInput" type="text"
+          placeholder="City, postcode or airport… e.g. EH21 or London"
+          autocomplete="off"
+          oninput="manualLocInput()"
+          onkeydown="manualLocKey(event)"
+          onblur="setTimeout(closeManualLoc,150)"
+          style="background:var(--surface);border-color:var(--border);margin-bottom:0"/>
+        <div class="typeahead-dropdown" id="manualLocDropdown"></div>
+      </div>
+    </div>
+
     <div class="hero-footer-note">Uses your location &amp; live ADS-B transponder data</div>
   </div>
 
@@ -289,8 +339,10 @@
     </div>
     <div class="location-info" id="locationInfo"></div>
     <div class="nav-tabs">
-      <div class="nav-tab active" id="tabSky" onclick="switchTab('sky')">✈ Sky</div>
-      <div class="nav-tab" id="tabWatch" onclick="switchTab('watch')">🔔 Watchlist</div>
+      <div class="nav-tab active" id="tabSky"   onclick="switchTab('sky')">✈ Sky</div>
+      <div class="nav-tab"        id="tabWatch" onclick="switchTab('watch')">🔔 Alerts</div>
+      <div class="nav-tab"        id="tabLog"   onclick="switchTab('log')">📋 Log</div>
+      <div class="nav-tab"        id="tabSet"   onclick="switchTab('settings')">⚙️</div>
     </div>
     <button class="scan-btn" id="scanBtn" onclick="fetchFlights()"><span>🔄</span> Refresh Now</button>
   </div>
@@ -337,6 +389,57 @@
       <button class="add-btn" onclick="addAlert()">+ Add Alert</button>
     </div>
     <div id="alertList"></div>
+  </div>
+
+  <!-- Log tab -->
+  <div id="logTab" style="display:none">
+    <div id="logContent"></div>
+  </div>
+
+  <!-- Settings tab -->
+  <div id="settingsTab" style="display:none">
+    <div class="settings-section">
+      <div class="settings-title">📡 Scan Radius</div>
+      <div class="settings-desc">How far out to look for aircraft</div>
+      <div class="settings-options" id="radiusOptions">
+        <div class="settings-chip active" onclick="setSetting('radius',20,this)">20 km</div>
+        <div class="settings-chip" onclick="setSetting('radius',30,this)">30 km</div>
+        <div class="settings-chip" onclick="setSetting('radius',50,this)">50 km</div>
+        <div class="settings-chip" onclick="setSetting('radius',100,this)">100 km</div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-title">📏 Units</div>
+      <div class="settings-desc">Distance and speed display</div>
+      <div class="settings-options" id="unitsOptions">
+        <div class="settings-chip active" onclick="setSetting('units','metric',this)">km / kts</div>
+        <div class="settings-chip" onclick="setSetting('units','imperial',this)">miles / mph</div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-title">🌓 Theme</div>
+      <div class="settings-desc">App appearance</div>
+      <div class="settings-options">
+        <div class="settings-chip" id="themeChipLight" onclick="setTheme('light')">☀️ Light</div>
+        <div class="settings-chip" id="themeChipDark" onclick="setTheme('dark')">🌙 Dark</div>
+      </div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-title">🗑️ Clear Data</div>
+      <div class="settings-desc">Reset flight log and alerts</div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button class="settings-btn-danger" onclick="clearLog()">Clear flight log</button>
+        <button class="settings-btn-danger" onclick="clearAlerts()">Clear all alerts</button>
+      </div>
+    </div>
+    <div class="settings-section" style="border:none">
+      <div class="settings-title">ℹ️ About</div>
+      <div class="settings-about">
+        <div class="about-logo">✈️ Overhead</div>
+        <div class="about-version">Version 0.9 · Web Preview</div>
+        <div class="about-desc">Live aircraft tracking using ADS-B transponder data via airplanes.live and route data via adsbdb.com. Built with ❤️ for aviation enthusiasts.</div>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -477,7 +580,8 @@ function startTracking(){
       initCompass(); fetchFlights();
     },
     ()=>{
-      showError('Location denied — please allow in browser settings');
+      showError('Location denied or unavailable');
+      showManualLocOption();
       btn.disabled=false; btn.innerHTML='<span>📍</span> Scan the Sky Above Me';
     },
     {enableHighAccuracy:true}
@@ -533,7 +637,7 @@ async function fetchFlights(){
   leafletMaps={};
 
   try{
-    const res=await fetch(`https://api.airplanes.live/v2/point/${userLat}/${userLon}/30`);
+    const res=await fetch(`https://api.airplanes.live/v2/point/${userLat}/${userLon}/${appSettings.radius}`);
     if(!res.ok)throw new Error(`HTTP ${res.status}`);
     const data=await res.json();
     const airborne=(data.ac||[])
@@ -553,6 +657,7 @@ async function fetchFlights(){
     }));
 
     lastFlights=enriched;
+    logFlights(enriched);
     setLive(true,'live · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}));
     renderCards(enriched);
     checkAlerts(enriched);
@@ -723,14 +828,17 @@ function initMap(idx){
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
+const ALL_TABS=['sky','watch','log','settings'];
+
 function switchTab(tab){
-  const isSky=tab==='sky';
-  document.getElementById('skyTab').style.display=isSky?'block':'none';
-  document.getElementById('watchTab').style.display=isSky?'none':'block';
-  document.getElementById('scanBtn').style.display=isSky?'flex':'none';
-  document.getElementById('tabSky').className='nav-tab'+(isSky?' active':'');
-  document.getElementById('tabWatch').className='nav-tab'+(!isSky?' active':'');
-  if(!isSky)renderAlertList();
+  ALL_TABS.forEach(t=>{
+    document.getElementById(t==='sky'?'skyTab':t==='watch'?'watchTab':t==='log'?'logTab':'settingsTab').style.display=t===tab?'block':'none';
+    document.getElementById(t==='sky'?'tabSky':t==='watch'?'tabWatch':t==='log'?'tabLog':'tabSet').className='nav-tab'+(t===tab?' active':'');
+  });
+  document.getElementById('scanBtn').style.display=tab==='sky'?'flex':'none';
+  if(tab==='watch')renderAlertList();
+  if(tab==='log')renderLog();
+  if(tab==='settings')renderSettings();
 }
 
 // ── Alert banner ──────────────────────────────────────────────────────────────
@@ -907,6 +1015,165 @@ function typeaheadKey(e){
 
 function pickSuggestion(v){document.getElementById('alertValue').value=v;closeTypeahead();}
 function closeTypeahead(){document.getElementById('typeaheadDropdown').classList.remove('open');typeaheadFocusIndex=-1;}
+
+// ── Manual location search ────────────────────────────────────────────────────
+
+let manualLocResults=[];
+
+async function manualLocInput(){
+  const q=document.getElementById('manualLocInput').value.trim();
+  const dd=document.getElementById('manualLocDropdown');
+  if(q.length<2){dd.classList.remove('open');return;}
+
+  // Use Nominatim (OpenStreetMap geocoder) — free, no key needed
+  try{
+    const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1`,{headers:{'Accept-Language':'en'}});
+    const results=await res.json();
+    if(!results.length){dd.innerHTML='<div class="typeahead-no-results">No locations found — try a different search</div>';dd.classList.add('open');return;}
+    manualLocResults=results;
+    dd.innerHTML=results.map((r,i)=>{
+      const name=r.display_name.split(',').slice(0,3).join(', ');
+      const type=r.type||r.class||'';
+      return `<div class="typeahead-item" onmousedown="pickManualLoc(${i})">
+        <div class="typeahead-item-icon">📍</div>
+        <div class="typeahead-item-text">
+          <div class="typeahead-item-name">${name}</div>
+          <div class="typeahead-item-tag">${type} · ${parseFloat(r.lat).toFixed(4)}°, ${parseFloat(r.lon).toFixed(4)}°</div>
+        </div>
+      </div>`;
+    }).join('');
+    dd.classList.add('open');
+  }catch{dd.innerHTML='<div class="typeahead-no-results">Search unavailable — check connection</div>';dd.classList.add('open');}
+}
+
+function manualLocKey(e){
+  if(e.key==='Enter'&&manualLocResults.length)pickManualLoc(0);
+  if(e.key==='Escape')closeManualLoc();
+}
+
+function pickManualLoc(idx){
+  const r=manualLocResults[idx];
+  if(!r)return;
+  userLat=parseFloat(r.lat); userLon=parseFloat(r.lon);
+  const name=r.display_name.split(',').slice(0,2).join(', ');
+  closeManualLoc();
+  document.getElementById('heroScreen').style.display='none';
+  document.getElementById('postScan').style.display='block';
+  document.getElementById('locationInfo').textContent=`📌 ${name}`;
+  initCompass(); fetchFlights();
+}
+
+function closeManualLoc(){
+  document.getElementById('manualLocDropdown').classList.remove('open');
+}
+
+// Show manual location option on error
+function showManualLocOption(){
+  document.getElementById('manualLocWrap').style.display='block';
+}
+
+// ── Flight log ────────────────────────────────────────────────────────────────
+
+function loadLog(){try{return JSON.parse(localStorage.getItem('overhead_log')||'[]');}catch{return[];}}
+function saveLog(l){try{localStorage.setItem('overhead_log',JSON.stringify(l.slice(0,200)));}catch{}}// keep last 200
+
+function logFlights(flights){
+  const existing=loadLog();
+  const now=Date.now();
+  const newEntries=flights.map(f=>({
+    ts:now,
+    callsign:f.callsign||f.hex||'?',
+    airline:f.route?.airline||guessAirline(f.callsign)||null,
+    from:f.route?.from||null,
+    to:f.route?.to||null,
+    fromCity:f.route?.fromCity||cityFor(f.route?.from)||null,
+    toCity:f.route?.toCity||cityFor(f.route?.to)||null,
+    alt:f.alt_baro?Math.round(f.alt_baro):null,
+    type:f.acInfo?.type||f.acInfo?.icaoType||f.t||null,
+    dist:f.dist?parseFloat(f.dist.toFixed(1)):null,
+    icon:(!f.route?.from&&!f.route?.to)?classifyAircraft(f).icon:'✈️',
+  }));
+  // Dedupe: skip if same callsign seen in last 5 minutes
+  const filtered=newEntries.filter(e=>!existing.some(ex=>ex.callsign===e.callsign&&(now-ex.ts)<300000));
+  saveLog([...filtered,...existing]);
+}
+
+function renderLog(){
+  const log=loadLog();
+  const container=document.getElementById('logContent');
+  if(!log.length){
+    container.innerHTML=`<div class="log-empty"><span class="log-empty-icon">📋</span><div class="log-empty-title">No flights logged yet</div><div class="log-empty-sub">Every aircraft that appears on your Sky tab<br>is automatically saved here</div></div>`;
+    return;
+  }
+  // Group by day
+  const days={};
+  log.forEach(e=>{
+    const d=new Date(e.ts).toLocaleDateString([],{weekday:'long',day:'numeric',month:'long'});
+    if(!days[d])days[d]=[];
+    days[d].push(e);
+  });
+  const html=Object.entries(days).map(([day,entries])=>`
+    <div class="log-day">
+      <div class="log-day-label">${day}</div>
+      ${entries.map(e=>{
+        const route=e.from&&e.to?`${e.from} → ${e.to}`:e.airline||e.callsign;
+        const sub=[e.airline,e.type,e.alt?`${e.alt.toLocaleString()}ft`:null].filter(Boolean).join(' · ');
+        const time=new Date(e.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        return `<div class="log-item">
+          <div class="log-icon">${e.icon}</div>
+          <div class="log-info">
+            <div class="log-route">${route}</div>
+            <div class="log-meta">${sub||e.callsign}</div>
+          </div>
+          <div class="log-time">${time}</div>
+        </div>`;
+      }).join('')}
+    </div>`).join('');
+  container.innerHTML=html+`<div class="log-count">${log.length} flights logged in total</div>`;
+}
+
+// ── Settings ──────────────────────────────────────────────────────────────────
+
+let appSettings={radius:30,units:'metric'};
+
+function loadSettings(){
+  try{const s=JSON.parse(localStorage.getItem('overhead_settings')||'{}');appSettings={...appSettings,...s};}catch{}
+}
+loadSettings();
+
+function saveSettings(){localStorage.setItem('overhead_settings',JSON.stringify(appSettings));}
+
+function setSetting(key,val,el){
+  appSettings[key]=val; saveSettings();
+  const parent=el.closest('.settings-options');
+  parent.querySelectorAll('.settings-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function setTheme(t){
+  if(t==='light')document.body.classList.add('light');
+  else document.body.classList.remove('light');
+  localStorage.setItem('overhead_theme',t);
+  renderSettings();
+}
+
+function renderSettings(){
+  // Sync radius chips
+  document.querySelectorAll('#radiusOptions .settings-chip').forEach(c=>{
+    c.classList.toggle('active',parseInt(c.textContent)===appSettings.radius);
+  });
+  // Sync units chips
+  document.querySelectorAll('#unitsOptions .settings-chip').forEach(c=>{
+    c.classList.toggle('active',(c.textContent.includes('km')&&appSettings.units==='metric')||(c.textContent.includes('miles')&&appSettings.units==='imperial'));
+  });
+  // Sync theme chips
+  const isLight=document.body.classList.contains('light');
+  document.getElementById('themeChipLight')?.classList.toggle('active',isLight);
+  document.getElementById('themeChipDark')?.classList.toggle('active',!isLight);
+}
+
+function clearLog(){if(confirm('Clear your entire flight log?')){localStorage.removeItem('overhead_log');renderLog();}}
+function clearAlerts(){if(confirm('Delete all alerts?')){localStorage.removeItem('overhead_alerts');renderAlertList();}}
 
 </script>
 </body>
