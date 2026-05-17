@@ -148,7 +148,10 @@
     .stat-l{font-size:9px;font-family:'Inconsolata',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
     .stat-v{font-family:'Inconsolata',monospace;font-size:13px;font-weight:500;color:var(--text);white-space:nowrap}
     .stat-v .unit{font-size:9px;color:var(--muted)}
-    .tap-hint{text-align:center;font-size:9px;font-family:'Inconsolata',monospace;color:var(--subtle);padding:5px 0 8px;letter-spacing:0.5px}
+    .tap-hint{text-align:center;font-size:16px;color:var(--border);padding:2px 0 8px;transition:color 0.2s,transform 0.3s;line-height:1}
+    .flight-card:hover .tap-hint{color:var(--muted)}
+    .flight-card:hover{box-shadow:0 4px 20px rgba(59,130,246,0.08);border-color:rgba(59,130,246,0.25)}
+    .flight-card.open .tap-hint{transform:scaleY(-1);display:block;color:var(--accent)}
 
     /* ── DRILL PANEL ── */
     .drill-panel{display:none;border-top:1px solid var(--border);background:var(--surface2);padding:16px;animation:expandIn 0.2s ease}
@@ -366,8 +369,8 @@ function toggleTheme(){
   localStorage.setItem('overhead_theme', document.body.classList.contains('light')?'light':'dark');
 }
 
-// Apply saved theme immediately (no flash)
-if(localStorage.getItem('overhead_theme')==='light') document.body.classList.add('light');
+// Apply saved theme — default is light
+if(localStorage.getItem('overhead_theme')!=='dark') document.body.classList.add('light');
 
 // ── Clock ─────────────────────────────────────────────────────────────────────
 
@@ -636,7 +639,7 @@ function renderCards(flights){
           <div class="stat-cell"><div class="stat-l">Hdg</div><div class="stat-v">${hdg}</div></div>
           <div class="stat-cell"><div class="stat-l">Dist</div><div class="stat-v">${dist}<span class="unit"> km</span></div></div>
         </div>
-        <div class="tap-hint">tap for more ↓</div>
+        <div class="tap-hint">⌄</div>
         <div class="drill-panel" id="drill-${i}">
           <div class="drill-grid">
             ${fromCity&&fromCity!==from?`<div class="drill-cell"><div class="d-label">${hasPartialRoute?'Departed':'From'}</div><div class="d-val">${fromCity}</div></div>`:''}
@@ -668,10 +671,14 @@ function toggleDrill(idx){
   const panel=document.getElementById(`drill-${idx}`);
   if(!panel)return;
   const isOpen=panel.style.display==='block';
+  // Close all
   document.querySelectorAll('.drill-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('.flight-card').forEach(c=>c.classList.remove('open'));
   if(!isOpen){
     panel.style.display='block';
-    // Small delay so the panel is fully visible before Leaflet measures it
+    // Mark the parent card as open
+    const card=panel.closest('.flight-card');
+    if(card) card.classList.add('open');
     setTimeout(()=>initMap(idx),50);
   }
 }
@@ -694,14 +701,16 @@ function initMap(idx){
   L.marker([userLat,userLon],{icon:L.divIcon({html:`<div style="width:12px;height:12px;border-radius:50%;background:#3b82f6;border:2px solid #fff;box-shadow:0 0 8px rgba(59,130,246,0.8)"></div>`,iconSize:[12,12],iconAnchor:[6,6],className:''})})
    .bindTooltip('You',{permanent:false,direction:'top'}).addTo(map);
 
-  // Plane icon rotated to heading
+  // Detect if helicopter
+  const isHeli = (f.gs||0)<150 && (f.alt_baro||0)<5000;
+  const mapEmoji = isHeli ? '🚁' : '✈';
   const hdg=f.track||0;
   const cs=f.callsign||f.hex||'';
   const from=f.route?.from||'';
   const to=f.route?.to||'';
   const label=(from&&to)?`${from}→${to}`:cs;
 
-  L.marker([f.lat,f.lon],{icon:L.divIcon({html:`<div style="font-size:22px;transform:rotate(${hdg}deg);color:#06b6d4;filter:drop-shadow(0 0 4px rgba(6,182,212,0.9));line-height:1">✈</div>`,iconSize:[22,22],iconAnchor:[11,11],className:''})})
+  L.marker([f.lat,f.lon],{icon:L.divIcon({html:`<div style="font-size:22px;transform:rotate(${hdg}deg);color:#06b6d4;filter:drop-shadow(0 0 4px rgba(6,182,212,0.9));line-height:1">${mapEmoji}</div>`,iconSize:[22,22],iconAnchor:[11,11],className:''})})
    .bindTooltip(label,{permanent:true,direction:'top',offset:[0,-8],className:'plane-tip'}).addTo(map);
 
   // Dashed line user → plane
