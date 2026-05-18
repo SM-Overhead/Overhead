@@ -59,23 +59,21 @@
     .logo-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
     .logo h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;letter-spacing:-0.5px;background:linear-gradient(90deg,#f0f4ff,#94b4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
     body.light .logo h1{background:linear-gradient(90deg,#1e3a8a,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-    .header-right{display:flex;align-items:center;gap:8px}
-    .live-pill{display:flex;align-items:center;gap:6px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-size:11px;font-family:'Inconsolata',monospace;color:var(--muted);transition:all 0.3s}
+    .header-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+    .live-pill{display:flex;align-items:center;gap:5px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 10px;font-size:10px;font-family:'Inconsolata',monospace;color:var(--muted);transition:all 0.3s;white-space:nowrap}
     .live-pill.active{border-color:rgba(16,185,129,0.3);color:var(--green)}
-    .live-dot{width:6px;height:6px;border-radius:50%;background:var(--muted);transition:all 0.3s;flex-shrink:0}
+    .live-dot{width:5px;height:5px;border-radius:50%;background:var(--muted);transition:all 0.3s;flex-shrink:0}
     .live-pill.active .live-dot{background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-
-    /* Theme toggle */
-    .theme-toggle{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 10px;cursor:pointer;font-size:14px;transition:all 0.2s;line-height:1}
+    .theme-toggle{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:5px 8px;cursor:pointer;font-size:13px;transition:all 0.2s;line-height:1;flex-shrink:0}
     .theme-toggle:hover{border-color:var(--accent)}
 
     .location-info{margin:20px 0 8px;font-size:12px;font-family:'Inconsolata',monospace;color:var(--muted)}
 
     /* ── NAV TABS ── */
-    .nav-tabs{display:flex;gap:8px;margin-bottom:20px}
-    .nav-tab{flex:1;padding:10px;border:1px solid var(--border);background:var(--surface);border-radius:12px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all 0.2s;text-align:center;font-family:'Space Grotesk',sans-serif}
-    .nav-tab.active{background:var(--subtle);border-color:var(--accent);color:var(--text)}
+    .nav-tabs{display:grid;grid-template-columns:repeat(6,1fr);gap:5px;margin-bottom:20px}
+    .nav-tab{padding:8px 2px;border:1px solid var(--border);background:var(--surface);border-radius:10px;font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;transition:all 0.2s;text-align:center;font-family:'Space Grotesk',sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .nav-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
 
     .scan-btn{width:100%;background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);color:#fff;border:none;border-radius:16px;padding:18px;font-size:16px;font-weight:500;font-family:'Space Grotesk',sans-serif;cursor:pointer;transition:opacity 0.2s,transform 0.1s;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:28px}
     .scan-btn:active{transform:scale(0.98);opacity:0.9}
@@ -103,14 +101,17 @@
     .flight-card.primary .airline-dot{background:var(--green);box-shadow:0 0 8px var(--green)}
     .flight-card.private .airline-dot{background:var(--purple)}
     .flight-card.cargo .airline-dot{background:var(--amber)}
-    .airline-name{font-size:11px;font-weight:500;color:var(--muted);white-space:nowrap}
+    .airline-name{font-size:12px;font-weight:600;color:var(--text);white-space:nowrap}
     .flight-card.primary .airline-name{color:var(--green)}
     .flight-card.private .airline-name{color:var(--purple)}
     .flight-card.cargo .airline-name{color:var(--amber)}
     .airline-logo{width:22px;height:22px;border-radius:5px;object-fit:contain;background:#fff;padding:2px;flex-shrink:0;display:none}
     .airline-logo.loaded{display:block}
     .horizon-tag{font-size:9px;font-family:'Inconsolata',monospace;color:var(--muted);background:var(--subtle);border-radius:5px;padding:2px 7px;margin-left:4px;letter-spacing:0.3px;white-space:nowrap;flex-shrink:0}
-    .callsign-tag{font-family:'Inconsolata',monospace;font-size:11px;color:var(--muted);background:var(--subtle);border-radius:6px;padding:3px 8px;flex-shrink:0}
+    .callsign-tag{font-family:'Inconsolata',monospace;font-size:11px;color:var(--text);background:var(--subtle);border-radius:6px;padding:3px 8px;flex-shrink:0;font-weight:600}
+    .airport-city{font-size:12px;color:var(--text);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px;font-weight:500;opacity:0.7}
+    .stat-l{font-size:9px;font-family:'Inconsolata',monospace;color:var(--text);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px;font-weight:600;opacity:0.6}
+    .stat-v{font-family:'Inconsolata',monospace;font-size:14px;font-weight:700;color:var(--text);white-space:nowrap}
 
     .card-route{padding:10px 16px 14px}
     .route-airports{display:flex;align-items:center;margin-bottom:3px}
@@ -145,8 +146,6 @@
     .card-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border)}
     .stat-cell{padding:10px 12px;border-right:1px solid var(--border)}
     .stat-cell:last-child{border-right:none}
-    .stat-l{font-size:9px;font-family:'Inconsolata',monospace;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:3px}
-    .stat-v{font-family:'Inconsolata',monospace;font-size:13px;font-weight:500;color:var(--text);white-space:nowrap}
     .stat-v .unit{font-size:9px;color:var(--muted)}
     .tap-hint{text-align:center;padding:6px 0 10px;transition:opacity 0.2s;display:flex;align-items:center;justify-content:center;gap:3px}
     .tap-hint span{display:inline-block;width:6px;height:6px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:border-color 0.2s}
@@ -453,7 +452,7 @@
       </div>
       <div class="typeahead-wrap">
         <input class="form-input" id="exploreInput" type="text"
-          placeholder="e.g. London, JFK, EH21 8FH…"
+          placeholder="e.g. Manchester, JFK, M1 1AE…"
           autocomplete="off"
           oninput="exploreSearch()"
           onkeydown="exploreKey(event)"
@@ -1472,6 +1471,7 @@ function pickExplore(idx){
   if(!r)return;
   exploreLat=parseFloat(r.lat); exploreLon=parseFloat(r.lon);
   const name=r.display_name.split(',').slice(0,2).join(', ');
+  lastExploreLocationName=name;
   closeExplore();
   document.getElementById('exploreInput').value='';
   document.getElementById('exploreLocationInfo').textContent=`📍 ${name}`;
@@ -1519,7 +1519,7 @@ async function fetchExplore(lat,lon,locationName){
       return{...a,callsign,route,acInfo};
     }));
 
-    renderExploreCards(enriched,lat,lon);
+    renderExploreCards(enriched,lat,lon,name);
     startExploreCountdown(lat,lon,locationName);
   }catch(e){
     content.innerHTML=`<div class="state-box"><span class="state-icon">⚠️</span><div class="state-title">Error</div><div class="state-sub">${e.message}</div></div>`;
@@ -1540,14 +1540,16 @@ function startExploreCountdown(lat,lon,name){
   },1000);
 }
 
-function renderExploreCards(flights,lat,lon){
+function renderExploreCards(flights,lat,lon,name){
   const content=document.getElementById('exploreContent');
+  lastExploreLocationName=name||lastExploreLocationName;
 
-  // Temporarily override userLat/userLon so bearing/drill maps work correctly
-  const savedLat=userLat,savedLon=userLon;
-  userLat=lat; userLon=lon;
+  // Destroy old explore maps
+  Object.values(exploreLeafletMaps).forEach(m=>{try{m.remove();}catch{}});
+  exploreLeafletMaps={};
 
   const cards=flights.map((f,i)=>{
+    const idx=100+i; // offset to avoid clashing with sky tab drill IDs
     const cs=f.callsign||f.hex||'?????';
     const from=f.route?.from||null,to=f.route?.to||null;
     const fromCity=f.route?.fromCity||cityFor(from)||from;
@@ -1559,8 +1561,25 @@ function renderExploreCards(flights,lat,lon){
     const cardClass=classification?classification.cardClass:'';
     const alt=f.alt_baro?Math.round(f.alt_baro).toLocaleString():'—';
     const spd=f.gs?Math.round(f.gs):'—';
+    const hdg=f.track!=null?Math.round(f.track)+'°':'—';
     const dist=f.dist.toFixed(1);
+    const acType=f.acInfo?.type||f.acInfo?.icaoType||f.t||null;
+    const reg=f.acInfo?.reg||f.r||null;
     const airlineLabel=hasFullRoute?airline:hasPartialRoute?(airline||guessAirline(cs)||'Unknown'):classification.label;
+    const icaoPrefix=cs.replace(/[0-9\s]/g,'').toUpperCase();
+    const logoUrl=(hasFullRoute||hasPartialRoute)&&icaoPrefix?`https://www.flightaware.com/images/airline_logos/90p/${icaoPrefix}.png`:null;
+
+    // Bearing from explore location to plane
+    const bearing=bearingFromPoint(lat,lon,f.lat,f.lon);
+    const arrow=bearing!=null?staticArrow(bearing):'✈';
+    const bAttr=bearing!=null?`data-bearing="${bearing.toFixed(1)}"`:' ';
+
+    let etaStr=null;
+    if(to&&f.gs){
+      let dLat=f.route?.destLat,dLon=f.route?.destLon;
+      if((!dLat||!dLon)&&AIRPORT_COORDS[to]){dLat=AIRPORT_COORDS[to][0];dLon=AIRPORT_COORDS[to][1];}
+      if(dLat&&dLon)etaStr=formatEta(etaMinutes(f,dLat,dLon));
+    }
 
     let routeHtml;
     if(hasFullRoute){
@@ -1570,28 +1589,111 @@ function renderExploreCards(flights,lat,lon){
         <div style="text-align:right"><div class="airport-code">${to}</div>${toCity?`<div class="airport-city" style="text-align:right">${toCity}</div>`:''}</div>
       </div>`;
     }else if(hasPartialRoute){
-      routeHtml=`<div class="partial-route"><div class="partial-airport">${from}</div><div class="partial-info"><div class="partial-label">Departed</div>${fromCity?`<div class="partial-city">${fromCity}</div>`:''}</div></div>`;
+      routeHtml=`<div class="partial-route"><div class="partial-airport">${from}</div><div class="partial-info"><div class="partial-label">Departed</div>${fromCity?`<div class="partial-city">${fromCity}</div>`:''}<div class="partial-dest-unknown">Destination unknown</div></div></div>`;
     }else{
-      routeHtml=`<div class="aircraft-class-display"><span class="aircraft-class-icon">${classification.icon}</span><div class="aircraft-class-name">${classification.label}</div></div>`;
+      routeHtml=`<div class="aircraft-class-display"><span class="aircraft-class-icon">${classification.icon}</span><div class="aircraft-class-name">${classification.label}</div><div class="aircraft-class-detail">${classification.detail}</div></div>`;
     }
 
-    return `<div class="flight-card ${cardClass}" style="animation-delay:${i*0.06}s">
-      <div class="card-strip">
-        <div class="airline-badge"><div class="airline-dot"></div><div class="airline-name">${airlineLabel}</div></div>
-        <div class="callsign-tag">${cs}</div>
-      </div>
-      <div class="card-route">${routeHtml}</div>
-      <div class="card-stats">
-        <div class="stat-cell"><div class="stat-l">Alt</div><div class="stat-v">${alt}<span class="unit"> ft</span></div></div>
-        <div class="stat-cell"><div class="stat-l">Speed</div><div class="stat-v">${spd}<span class="unit"> kts</span></div></div>
-        <div class="stat-cell"><div class="stat-l">Dist</div><div class="stat-v">${dist}<span class="unit"> km</span></div></div>
-      </div>
-    </div>`;
+    return `
+      <div class="flight-card ${cardClass}" style="animation-delay:${i*0.06}s" onclick="toggleExploreDrill(${i})">
+        <div class="card-strip">
+          <div class="airline-badge">
+            <div class="airline-dot"></div>
+            ${logoUrl?`<img class="airline-logo" src="${logoUrl}" alt="" onload="this.classList.add('loaded')" onerror="this.style.display='none'">`:'' }
+            <div class="airline-name">${airlineLabel}</div>
+          </div>
+          <div class="callsign-tag">${cs}</div>
+        </div>
+        <div class="card-route">${routeHtml}</div>
+        ${etaStr?`<div class="eta-badge">🛬 ${etaStr}</div>`:''}
+        ${(acType||reg)?`<div class="aircraft-strip">🛩 ${[acType,reg].filter(Boolean).join(' · ')}</div>`:''}
+        <div class="card-stats">
+          <div class="stat-cell"><div class="stat-l">Alt</div><div class="stat-v">${alt}<span class="unit"> ft</span></div></div>
+          <div class="stat-cell"><div class="stat-l">Speed</div><div class="stat-v">${spd}<span class="unit"> kts</span></div></div>
+          <div class="stat-cell"><div class="stat-l">Hdg</div><div class="stat-v">${hdg}</div></div>
+          <div class="stat-cell"><div class="stat-l">Dist</div><div class="stat-v">${dist}<span class="unit"> km</span></div></div>
+        </div>
+        <div class="tap-hint"><span></span><span></span><span></span></div>
+        <div class="drill-panel" id="exdrill-${i}">
+          <div class="drill-grid">
+            ${fromCity&&fromCity!==from?`<div class="drill-cell"><div class="d-label">From</div><div class="d-val">${fromCity}</div></div>`:''}
+            ${toCity&&toCity!==to?`<div class="drill-cell"><div class="d-label">To</div><div class="d-val">${toCity}</div></div>`:''}
+            ${acType?`<div class="drill-cell"><div class="d-label">Aircraft</div><div class="d-val">${acType}</div></div>`:''}
+            ${reg?`<div class="drill-cell"><div class="d-label">Reg</div><div class="d-val">${reg}</div></div>`:''}
+            <div class="drill-cell"><div class="d-label">Bearing</div><div class="d-val">${bearing!=null?Math.round(bearing)+'° '+compassDir(bearing):'—'}</div></div>
+            ${etaStr?`<div class="drill-cell"><div class="d-label">ETA</div><div class="d-val" style="font-size:12px">${etaStr}</div></div>`:''}
+          </div>
+          <div class="compass-row">
+            <div class="compass-wrap"><span class="compass-arrow" ${bAttr}>${arrow}</span></div>
+            <div class="compass-info">
+              <div class="compass-label">DIRECTION FROM ${lastExploreLocationName.split(',')[0].toUpperCase()}</div>
+              <div class="compass-value">${bearing!=null?Math.round(bearing)+'° '+compassDir(bearing):'—'}</div>
+              <div class="compass-sub">Bearing from the explored location</div>
+            </div>
+          </div>
+          <div class="drill-map" id="exmap-${i}"></div>
+        </div>
+      </div>`;
   }).join('');
 
-  userLat=savedLat; userLon=savedLon;
-
   content.innerHTML=`<div class="section-label">${flights.length} aircraft overhead</div><div class="flights-list">${cards}</div>`;
+}
+
+let lastExploreFlights=[];
+let lastExploreLat=null,lastExploreLon=null;
+let lastExploreLocationName='';
+
+function bearingFromPoint(lat1,lon1,lat2,lon2){
+  const dL=(lon2-lon1)*Math.PI/180,la1=lat1*Math.PI/180,la2=lat2*Math.PI/180;
+  const y=Math.sin(dL)*Math.cos(la2),x=Math.cos(la1)*Math.sin(la2)-Math.sin(la1)*Math.cos(la2)*Math.cos(dL);
+  return((Math.atan2(y,x)*180/Math.PI)+360)%360;
+}
+
+function toggleExploreDrill(idx){
+  const panel=document.getElementById(`exdrill-${idx}`);
+  if(!panel)return;
+  const isOpen=panel.style.display==='block';
+  document.querySelectorAll('#exploreContent .drill-panel').forEach(p=>p.style.display='none');
+  document.querySelectorAll('#exploreContent .flight-card').forEach(c=>c.classList.remove('open'));
+  if(!isOpen){
+    panel.style.display='block';
+    const card=panel.closest('.flight-card');
+    if(card)card.classList.add('open');
+    setTimeout(()=>initExploreMap(idx),50);
+  }
+}
+
+function initExploreMap(idx){
+  const mapEl=document.getElementById(`exmap-${idx}`);
+  if(!mapEl||exploreLeafletMaps[idx])return;
+  const f=lastExploreFlights[idx];
+  if(!f||!f.lat||!f.lon||!lastExploreLat)return;
+
+  const map=L.map(mapEl,{zoomControl:false,attributionControl:false,dragging:true,scrollWheelZoom:false});
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:16}).addTo(map);
+
+  // Location cursor — 📍 pin for the explored location
+  L.marker([lastExploreLat,lastExploreLon],{icon:L.divIcon({
+    html:`<div style="font-size:20px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3))">📍</div>`,
+    iconSize:[20,20],iconAnchor:[10,20],className:''
+  })}).bindTooltip(lastExploreLocationName.split(',')[0],{permanent:false,direction:'top'}).addTo(map);
+
+  // Plane marker
+  const isHeli=(f.gs||0)<150&&(f.alt_baro||0)<5000;
+  const hdg=f.track||0;
+  const cs=f.callsign||f.hex||'';
+  const from=f.route?.from||'',to=f.route?.to||'';
+  const label=(from&&to)?`${from}→${to}`:cs;
+
+  L.marker([f.lat,f.lon],{icon:L.divIcon({
+    html:`<div style="font-size:22px;transform:rotate(${hdg}deg);color:#06b6d4;filter:drop-shadow(0 0 4px rgba(6,182,212,0.9));line-height:1">${isHeli?'🚁':'✈'}</div>`,
+    iconSize:[22,22],iconAnchor:[11,11],className:''
+  })}).bindTooltip(label,{permanent:true,direction:'top',offset:[0,-8],className:'plane-tip'}).addTo(map);
+
+  L.polyline([[lastExploreLat,lastExploreLon],[f.lat,f.lon]],{color:'#3b82f6',weight:1.5,dashArray:'5,8',opacity:0.5}).addTo(map);
+
+  exploreLeafletMaps[idx]=map;
+  map.fitBounds([[lastExploreLat,lastExploreLon],[f.lat,f.lon]],{padding:[28,28]});
 }
 
 </script>
