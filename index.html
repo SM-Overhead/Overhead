@@ -275,6 +275,46 @@
     .about-logo{font-size:20px;font-family:'Syne',sans-serif;font-weight:800;color:var(--text);margin-bottom:4px}
     .about-version{font-size:10px;font-family:'Inconsolata',monospace;color:var(--muted);margin-bottom:8px}
     .about-desc{font-size:12px;color:var(--muted);line-height:1.7}
+
+    /* ── STATS ── */
+    .stats-hero{background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:20px;padding:20px;margin-bottom:16px;color:#fff;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .stats-hero-cell{text-align:center}
+    .stats-hero-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1}
+    .stats-hero-label{font-size:9px;opacity:0.8;letter-spacing:1px;text-transform:uppercase;margin-top:4px;font-family:'Inconsolata',monospace}
+    .stats-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
+    .stats-card-title{font-size:11px;font-family:'Inconsolata',monospace;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:12px}
+    .stats-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+    .stats-row:last-child{border-bottom:none}
+    .stats-rank{font-size:10px;font-family:'Inconsolata',monospace;color:var(--muted);width:20px;flex-shrink:0}
+    .stats-row-icon{font-size:16px;flex-shrink:0}
+    .stats-row-label{flex:1;font-size:13px;font-weight:500;color:var(--text);min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .stats-row-val{font-size:12px;font-family:'Inconsolata',monospace;color:var(--muted);flex-shrink:0}
+    .stats-bar-wrap{margin-top:4px;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
+    .stats-bar-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:2px;transition:width 0.8s ease}
+    .stats-hour-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:3px;align-items:flex-end;height:52px;margin-bottom:6px}
+    .stats-hour-bar{background:var(--border);border-radius:2px 2px 0 0;min-height:3px;transition:background 0.2s;cursor:default;position:relative}
+    .stats-hour-bar.peak{background:linear-gradient(180deg,var(--accent2),var(--accent))}
+    .stats-hour-labels{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+    .stats-hour-label{font-size:7px;font-family:'Inconsolata',monospace;color:var(--muted);text-align:center}
+    .stats-streak{display:flex;align-items:center;gap:12px}
+    .stats-streak-num{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--accent);line-height:1}
+    .stats-streak-info{flex:1}
+    .stats-streak-label{font-size:13px;font-weight:600;color:var(--text)}
+    .stats-streak-sub{font-size:11px;color:var(--muted);margin-top:2px;font-family:'Inconsolata',monospace}
+    .stats-empty{text-align:center;padding:48px 16px;color:var(--muted)}
+    .stats-empty-icon{font-size:40px;display:block;margin-bottom:12px;opacity:0.5}
+    .stats-empty-title{font-family:'Syne',sans-serif;font-size:18px;color:var(--text);margin-bottom:6px}
+    .stats-empty-sub{font-size:12px;line-height:1.7}
+
+    /* ── EXPLORE ── */
+    .explore-intro{text-align:center;padding:24px 0 20px}
+    .explore-intro-icon{font-size:40px;margin-bottom:10px}
+    .explore-intro-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text);margin-bottom:6px}
+    .explore-intro-sub{font-size:13px;color:var(--muted);line-height:1.6}
+    .explore-search-wrap{margin-bottom:16px}
+    .explore-location-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+    .explore-location-info{font-size:13px;font-weight:500;color:var(--text)}
+    .explore-back-btn{font-size:11px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;padding:0;white-space:nowrap}
   </style>
 </head>
 <body>
@@ -339,10 +379,12 @@
     </div>
     <div class="location-info" id="locationInfo"></div>
     <div class="nav-tabs">
-      <div class="nav-tab active" id="tabSky"   onclick="switchTab('sky')">✈ Sky</div>
-      <div class="nav-tab"        id="tabWatch" onclick="switchTab('watch')">🔔 Alerts</div>
-      <div class="nav-tab"        id="tabLog"   onclick="switchTab('log')">📋 Log</div>
-      <div class="nav-tab"        id="tabSet"   onclick="switchTab('settings')">⚙️</div>
+      <div class="nav-tab active" id="tabSky"     onclick="switchTab('sky')">✈ Sky</div>
+      <div class="nav-tab"        id="tabWatch"   onclick="switchTab('watch')">🔔 Alerts</div>
+      <div class="nav-tab"        id="tabLog"     onclick="switchTab('log')">📋 Log</div>
+      <div class="nav-tab"        id="tabStats"   onclick="switchTab('stats')">📊 Stats</div>
+      <div class="nav-tab"        id="tabExplore" onclick="switchTab('explore')">🌍 Explore</div>
+      <div class="nav-tab"        id="tabSet"     onclick="switchTab('settings')">⚙️</div>
     </div>
     <button class="scan-btn" id="scanBtn" onclick="fetchFlights()"><span>🔄</span> Refresh Now</button>
   </div>
@@ -396,6 +438,42 @@
     <div id="logContent"></div>
   </div>
 
+  <!-- Stats tab -->
+  <div id="statsTab" style="display:none">
+    <div id="statsContent"></div>
+  </div>
+
+  <!-- Explore tab -->
+  <div id="exploreTab" style="display:none">
+    <div class="explore-search-wrap">
+      <div class="explore-intro">
+        <div class="explore-intro-icon">🌍</div>
+        <div class="explore-intro-title">Explore Anywhere</div>
+        <div class="explore-intro-sub">Search any city, airport or postcode<br>and see what's flying above it right now</div>
+      </div>
+      <div class="typeahead-wrap">
+        <input class="form-input" id="exploreInput" type="text"
+          placeholder="e.g. London, JFK, EH21 8FH…"
+          autocomplete="off"
+          oninput="exploreSearch()"
+          onkeydown="exploreKey(event)"
+          onblur="setTimeout(closeExplore,150)"/>
+        <div class="typeahead-dropdown" id="exploreDropdown"></div>
+      </div>
+    </div>
+    <div id="exploreResult" style="display:none">
+      <div class="explore-location-bar">
+        <div class="explore-location-info" id="exploreLocationInfo"></div>
+        <button class="explore-back-btn" onclick="resetExplore()">← Change location</button>
+      </div>
+      <div id="exploreContent"></div>
+      <div class="refresh-bar" id="exploreRefreshBar" style="display:none">
+        <span id="exploreRefreshLabel">refreshing in 30s</span>
+        <div class="refresh-progress"><div class="refresh-fill" id="exploreRefreshFill" style="width:100%"></div></div>
+      </div>
+    </div>
+  </div>
+
   <!-- Settings tab -->
   <div id="settingsTab" style="display:none">
     <div class="settings-section">
@@ -437,7 +515,6 @@
       <div class="settings-about">
         <div class="about-logo">✈️ Overhead</div>
         <div class="about-version">Version 0.9 · Web Preview</div>
-        <div class="about-desc">Live aircraft tracking using ADS-B transponder data via airplanes.live and route data via adsbdb.com. Built with ❤️ for aviation enthusiasts.</div>
       </div>
     </div>
   </div>
@@ -828,17 +905,22 @@ function initMap(idx){
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
 
-const ALL_TABS=['sky','watch','log','settings'];
+const ALL_TABS=['sky','watch','log','stats','explore','settings'];
+const TAB_IDS={sky:'skyTab',watch:'watchTab',log:'logTab',stats:'statsTab',explore:'exploreTab',settings:'settingsTab'};
+const NAV_IDS={sky:'tabSky',watch:'tabWatch',log:'tabLog',stats:'tabStats',explore:'tabExplore',settings:'tabSet'};
 
 function switchTab(tab){
   ALL_TABS.forEach(t=>{
-    document.getElementById(t==='sky'?'skyTab':t==='watch'?'watchTab':t==='log'?'logTab':'settingsTab').style.display=t===tab?'block':'none';
-    document.getElementById(t==='sky'?'tabSky':t==='watch'?'tabWatch':t==='log'?'tabLog':'tabSet').className='nav-tab'+(t===tab?' active':'');
+    const el=document.getElementById(TAB_IDS[t]);
+    if(el) el.style.display=t===tab?'block':'none';
+    const nav=document.getElementById(NAV_IDS[t]);
+    if(nav) nav.className='nav-tab'+(t===tab?' active':'');
   });
   document.getElementById('scanBtn').style.display=tab==='sky'?'flex':'none';
-  if(tab==='watch')renderAlertList();
-  if(tab==='log')renderLog();
-  if(tab==='settings')renderSettings();
+  if(tab==='watch') renderAlertList();
+  if(tab==='log')   renderLog();
+  if(tab==='stats') renderStats();
+  if(tab==='settings') renderSettings();
 }
 
 // ── Alert banner ──────────────────────────────────────────────────────────────
@@ -1174,6 +1256,343 @@ function renderSettings(){
 
 function clearLog(){if(confirm('Clear your entire flight log?')){localStorage.removeItem('overhead_log');renderLog();}}
 function clearAlerts(){if(confirm('Delete all alerts?')){localStorage.removeItem('overhead_alerts');renderAlertList();}}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+
+function renderStats(){
+  const log=loadLog();
+  const container=document.getElementById('statsContent');
+
+  if(log.length<3){
+    container.innerHTML=`<div class="stats-empty"><span class="stats-empty-icon">📊</span><div class="stats-empty-title">Not enough data yet</div><div class="stats-empty-sub">Use the Sky tab to spot more aircraft —<br>your stats will build up automatically</div></div>`;
+    return;
+  }
+
+  // ── Totals ──
+  const totalFlights=log.length;
+  const airlines=log.map(e=>e.airline).filter(Boolean);
+  const uniqueAirlines=new Set(airlines).size;
+  const destinations=log.map(e=>e.to).filter(Boolean);
+  const uniqueDest=new Set(destinations).size;
+  const countries=new Set(log.map(e=>e.toCity).filter(Boolean)).size;
+
+  // ── Top airlines ──
+  const airlineCount={};
+  airlines.forEach(a=>{airlineCount[a]=(airlineCount[a]||0)+1;});
+  const topAirlines=Object.entries(airlineCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // ── Top routes ──
+  const routeCount={};
+  log.filter(e=>e.from&&e.to).forEach(e=>{
+    const k=`${e.from} → ${e.to}`;
+    routeCount[k]=(routeCount[k]||0)+1;
+  });
+  const topRoutes=Object.entries(routeCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // ── Top destinations ──
+  const destCount={};
+  destinations.forEach(d=>{destCount[d]=(destCount[d]||0)+1;});
+  const topDest=Object.entries(destCount).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  // ── Most exotic (furthest destination by IATA code novelty — proxy: airports not in our CITIES table) ──
+  const exotic=log.filter(e=>e.to&&!CITIES[e.to]&&e.toCity).map(e=>e.toCity).filter(Boolean);
+  const exoticUnique=[...new Set(exotic)];
+
+  // ── Hourly distribution ──
+  const hours=new Array(24).fill(0);
+  log.forEach(e=>{hours[new Date(e.ts).getHours()]++;});
+  // Group into 2-hour slots for display (12 bars)
+  const hourSlots=[];
+  for(let i=0;i<24;i+=2) hourSlots.push(hours[i]+(hours[i+1]||0));
+  const maxSlot=Math.max(...hourSlots,1);
+  const peakSlotIdx=hourSlots.indexOf(Math.max(...hourSlots));
+
+  // ── Streak ──
+  const days=new Set(log.map(e=>new Date(e.ts).toDateString()));
+  const streak=calcStreak(log);
+
+  const barHtml=hourSlots.map((v,i)=>{
+    const h=i*2;
+    const pct=Math.max((v/maxSlot)*100,4);
+    return `<div class="stats-hour-bar${i===peakSlotIdx?' peak':''}" style="height:${pct}%" title="${h}:00–${h+2}:00 · ${v} flights"></div>`;
+  }).join('');
+
+  const labelHtml=hourSlots.map((_,i)=>`<div class="stats-hour-label">${i*2}h</div>`).join('');
+
+  const maxAirlineCount=topAirlines[0]?.[1]||1;
+  const maxRouteCount=topRoutes[0]?.[1]||1;
+  const maxDestCount=topDest[0]?.[1]||1;
+
+  container.innerHTML=`
+    <div class="stats-hero">
+      <div class="stats-hero-cell">
+        <div class="stats-hero-val">${totalFlights}</div>
+        <div class="stats-hero-label">Flights<br>Spotted</div>
+      </div>
+      <div class="stats-hero-cell">
+        <div class="stats-hero-val">${uniqueAirlines}</div>
+        <div class="stats-hero-label">Airlines<br>Seen</div>
+      </div>
+      <div class="stats-hero-cell">
+        <div class="stats-hero-val">${uniqueDest}</div>
+        <div class="stats-hero-label">Destinations<br>Overhead</div>
+      </div>
+    </div>
+
+    ${streak>0?`
+    <div class="stats-card">
+      <div class="stats-card-title">🔥 Streak</div>
+      <div class="stats-streak">
+        <div class="stats-streak-num">${streak}</div>
+        <div class="stats-streak-info">
+          <div class="stats-streak-label">${streak===1?'day':'days'} in a row</div>
+          <div class="stats-streak-sub">${days.size} total days spotting</div>
+        </div>
+      </div>
+    </div>`:''}
+
+    ${topAirlines.length?`
+    <div class="stats-card">
+      <div class="stats-card-title">✈️ Top Airlines Overhead</div>
+      ${topAirlines.map(([name,count],i)=>`
+        <div class="stats-row">
+          <div class="stats-rank">${i+1}</div>
+          <div class="stats-row-icon">✈️</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="stats-row-label">${name}</div>
+              <div class="stats-row-val">${count}×</div>
+            </div>
+            <div class="stats-bar-wrap"><div class="stats-bar-fill" style="width:${(count/maxAirlineCount*100).toFixed(0)}%"></div></div>
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
+    ${topRoutes.length?`
+    <div class="stats-card">
+      <div class="stats-card-title">🛫 Most Common Routes</div>
+      ${topRoutes.map(([route,count],i)=>`
+        <div class="stats-row">
+          <div class="stats-rank">${i+1}</div>
+          <div class="stats-row-icon">🛫</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="stats-row-label">${route}</div>
+              <div class="stats-row-val">${count}×</div>
+            </div>
+            <div class="stats-bar-wrap"><div class="stats-bar-fill" style="width:${(count/maxRouteCount*100).toFixed(0)}%"></div></div>
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
+    ${topDest.length?`
+    <div class="stats-card">
+      <div class="stats-card-title">🛬 Top Destinations</div>
+      ${topDest.map(([dest,count],i)=>`
+        <div class="stats-row">
+          <div class="stats-rank">${i+1}</div>
+          <div class="stats-row-icon">🛬</div>
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <div class="stats-row-label">${CITIES[dest]?`${dest} · ${CITIES[dest]}`:dest}</div>
+              <div class="stats-row-val">${count}×</div>
+            </div>
+            <div class="stats-bar-wrap"><div class="stats-bar-fill" style="width:${(count/maxDestCount*100).toFixed(0)}%"></div></div>
+          </div>
+        </div>`).join('')}
+    </div>`:''}
+
+    <div class="stats-card">
+      <div class="stats-card-title">🕐 Busiest Times</div>
+      <div class="stats-hour-grid">${barHtml}</div>
+      <div class="stats-hour-labels">${labelHtml}</div>
+    </div>
+
+    ${exoticUnique.length?`
+    <div class="stats-card">
+      <div class="stats-card-title">🌏 Exotic Destinations Spotted</div>
+      ${exoticUnique.slice(0,8).map(city=>`
+        <div class="stats-row">
+          <div class="stats-row-icon">🌏</div>
+          <div class="stats-row-label">${city}</div>
+        </div>`).join('')}
+    </div>`:''}
+  `;
+}
+
+function calcStreak(log){
+  if(!log.length)return 0;
+  const today=new Date().toDateString();
+  const days=[...new Set(log.map(e=>new Date(e.ts).toDateString()))].sort((a,b)=>new Date(b)-new Date(a));
+  if(days[0]!==today&&days[0]!==new Date(Date.now()-86400000).toDateString())return 0;
+  let streak=1;
+  for(let i=1;i<days.length;i++){
+    const diff=(new Date(days[i-1])-new Date(days[i]))/86400000;
+    if(Math.round(diff)===1)streak++;
+    else break;
+  }
+  return streak;
+}
+
+// ── Explore ───────────────────────────────────────────────────────────────────
+
+let exploreResults=[];
+let exploreCountdownTimer=null;
+let exploreLat=null,exploreLon=null;
+let exploreLeafletMaps={};
+
+async function exploreSearch(){
+  const q=document.getElementById('exploreInput').value.trim();
+  const dd=document.getElementById('exploreDropdown');
+  if(q.length<2){dd.classList.remove('open');return;}
+  try{
+    const res=await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=6&addressdetails=1`,{headers:{'Accept-Language':'en'}});
+    const results=await res.json();
+    exploreResults=results;
+    if(!results.length){dd.innerHTML='<div class="typeahead-no-results">No locations found</div>';dd.classList.add('open');return;}
+    dd.innerHTML=results.map((r,i)=>{
+      const name=r.display_name.split(',').slice(0,3).join(', ');
+      return `<div class="typeahead-item" onmousedown="pickExplore(${i})">
+        <div class="typeahead-item-icon">📍</div>
+        <div class="typeahead-item-text">
+          <div class="typeahead-item-name">${name}</div>
+          <div class="typeahead-item-tag">${r.type||r.class||''}</div>
+        </div>
+      </div>`;
+    }).join('');
+    dd.classList.add('open');
+  }catch{dd.innerHTML='<div class="typeahead-no-results">Search unavailable</div>';dd.classList.add('open');}
+}
+
+function exploreKey(e){if(e.key==='Enter'&&exploreResults.length)pickExplore(0);if(e.key==='Escape')closeExplore();}
+function closeExplore(){document.getElementById('exploreDropdown').classList.remove('open');}
+
+function pickExplore(idx){
+  const r=exploreResults[idx];
+  if(!r)return;
+  exploreLat=parseFloat(r.lat); exploreLon=parseFloat(r.lon);
+  const name=r.display_name.split(',').slice(0,2).join(', ');
+  closeExplore();
+  document.getElementById('exploreInput').value='';
+  document.getElementById('exploreLocationInfo').textContent=`📍 ${name}`;
+  document.getElementById('exploreResult').style.display='block';
+  fetchExplore(exploreLat,exploreLon,name);
+}
+
+function resetExplore(){
+  clearInterval(exploreCountdownTimer);
+  Object.values(exploreLeafletMaps).forEach(m=>{try{m.remove();}catch{}});
+  exploreLeafletMaps={};
+  document.getElementById('exploreResult').style.display='none';
+  document.getElementById('exploreContent').innerHTML='';
+  document.getElementById('exploreRefreshBar').style.display='none';
+  exploreLat=null; exploreLon=null;
+}
+
+async function fetchExplore(lat,lon,locationName){
+  const content=document.getElementById('exploreContent');
+  content.innerHTML='<div class="spinner"></div><div class="spinner-label">scanning '+locationName+'…</div>';
+  document.getElementById('exploreRefreshBar').style.display='none';
+
+  // Destroy old explore maps
+  Object.values(exploreLeafletMaps).forEach(m=>{try{m.remove();}catch{}});
+  exploreLeafletMaps={};
+
+  try{
+    const res=await fetch(`https://api.airplanes.live/v2/point/${lat}/${lon}/${appSettings.radius}`);
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    const airborne=(data.ac||[])
+      .filter(a=>!a.on_ground&&(a.gs==null||a.gs>=MIN_SPD)&&(a.alt_baro==null||a.alt_baro>=300)&&a.lat&&a.lon)
+      .map(a=>({...a,dist:distKm(lat,lon,a.lat,a.lon)}))
+      .sort((a,b)=>a.dist-b.dist).slice(0,5);
+
+    if(!airborne.length){
+      content.innerHTML=`<div class="state-box"><span class="state-icon">🌤️</span><div class="state-title">Clear skies</div><div class="state-sub">No airborne aircraft within ${appSettings.radius}km of ${locationName}</div></div>`;
+      startExploreCountdown(lat,lon,locationName);
+      return;
+    }
+
+    const enriched=await Promise.all(airborne.map(async a=>{
+      const callsign=(a.flight||'').trim();
+      const [route,acInfo]=await Promise.all([lookupRoute(callsign),lookupAircraft(a.hex)]);
+      return{...a,callsign,route,acInfo};
+    }));
+
+    renderExploreCards(enriched,lat,lon);
+    startExploreCountdown(lat,lon,locationName);
+  }catch(e){
+    content.innerHTML=`<div class="state-box"><span class="state-icon">⚠️</span><div class="state-title">Error</div><div class="state-sub">${e.message}</div></div>`;
+  }
+}
+
+function startExploreCountdown(lat,lon,name){
+  clearInterval(exploreCountdownTimer);
+  let c=30;
+  const fill=document.getElementById('exploreRefreshFill');
+  const label=document.getElementById('exploreRefreshLabel');
+  document.getElementById('exploreRefreshBar').style.display='flex';
+  exploreCountdownTimer=setInterval(()=>{
+    c--;
+    fill.style.width=(c/30*100)+'%';
+    label.textContent=`refreshing in ${c}s`;
+    if(c<=0){clearInterval(exploreCountdownTimer);fetchExplore(lat,lon,name);}
+  },1000);
+}
+
+function renderExploreCards(flights,lat,lon){
+  const content=document.getElementById('exploreContent');
+
+  // Temporarily override userLat/userLon so bearing/drill maps work correctly
+  const savedLat=userLat,savedLon=userLon;
+  userLat=lat; userLon=lon;
+
+  const cards=flights.map((f,i)=>{
+    const cs=f.callsign||f.hex||'?????';
+    const from=f.route?.from||null,to=f.route?.to||null;
+    const fromCity=f.route?.fromCity||cityFor(from)||from;
+    const toCity=f.route?.toCity||cityFor(to)||to;
+    const airline=f.route?.airline||guessAirline(cs)||null;
+    const hasFullRoute=!!(from&&to&&airline);
+    const hasPartialRoute=!!(from&&!to);
+    const classification=!hasFullRoute?classifyAircraft(f):null;
+    const cardClass=classification?classification.cardClass:'';
+    const alt=f.alt_baro?Math.round(f.alt_baro).toLocaleString():'—';
+    const spd=f.gs?Math.round(f.gs):'—';
+    const dist=f.dist.toFixed(1);
+    const airlineLabel=hasFullRoute?airline:hasPartialRoute?(airline||guessAirline(cs)||'Unknown'):classification.label;
+
+    let routeHtml;
+    if(hasFullRoute){
+      routeHtml=`<div class="route-airports">
+        <div><div class="airport-code">${from}</div>${fromCity?`<div class="airport-city">${fromCity}</div>`:''}</div>
+        <div class="route-arrow"><div class="route-line"></div><div class="route-plane">✈</div></div>
+        <div style="text-align:right"><div class="airport-code">${to}</div>${toCity?`<div class="airport-city" style="text-align:right">${toCity}</div>`:''}</div>
+      </div>`;
+    }else if(hasPartialRoute){
+      routeHtml=`<div class="partial-route"><div class="partial-airport">${from}</div><div class="partial-info"><div class="partial-label">Departed</div>${fromCity?`<div class="partial-city">${fromCity}</div>`:''}</div></div>`;
+    }else{
+      routeHtml=`<div class="aircraft-class-display"><span class="aircraft-class-icon">${classification.icon}</span><div class="aircraft-class-name">${classification.label}</div></div>`;
+    }
+
+    return `<div class="flight-card ${cardClass}" style="animation-delay:${i*0.06}s">
+      <div class="card-strip">
+        <div class="airline-badge"><div class="airline-dot"></div><div class="airline-name">${airlineLabel}</div></div>
+        <div class="callsign-tag">${cs}</div>
+      </div>
+      <div class="card-route">${routeHtml}</div>
+      <div class="card-stats">
+        <div class="stat-cell"><div class="stat-l">Alt</div><div class="stat-v">${alt}<span class="unit"> ft</span></div></div>
+        <div class="stat-cell"><div class="stat-l">Speed</div><div class="stat-v">${spd}<span class="unit"> kts</span></div></div>
+        <div class="stat-cell"><div class="stat-l">Dist</div><div class="stat-v">${dist}<span class="unit"> km</span></div></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  userLat=savedLat; userLon=savedLon;
+
+  content.innerHTML=`<div class="section-label">${flights.length} aircraft overhead</div><div class="flights-list">${cards}</div>`;
+}
 
 </script>
 </body>
